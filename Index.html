@@ -2,72 +2,65 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hotspots Paranormales</title>
 
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhI+_G2IXhF6dpP7kG2lLW5xgIChp8vP5pKw="
-    crossorigin=""
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <style>
-    /* Reset básico */
+    /* Aseguramos que el HTML y BODY ocupen todo el alto */
     html, body {
       height: 100%;
+      width: 100%;
       margin: 0;
       padding: 0;
-      overflow: hidden; /* Evita scrolls extraños */
-    }
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: #000;
-      color: #eee;
-      display: flex;
-      flex-direction: column;
+      overflow: hidden; /* Evita scrolls dobles */
     }
 
+    /* Barra superior fija */
     #top-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
       height: 50px;
-      padding: 0 15px;
-      background: #1a1a1a;
+      background: #111;
+      color: white;
       display: flex;
-      gap: 15px;
       align-items: center;
+      padding: 0 15px;
+      box-sizing: border-box;
+      z-index: 2000; /* Siempre por encima del mapa */
       border-bottom: 1px solid #333;
-      z-index: 1000; /* Por encima del mapa */
+    }
+
+    /* Contenedor del mapa fijo ocupando el resto */
+    #map {
+      position: absolute;
+      top: 50px; /* Debajo de la barra */
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #000; /* Fondo negro mientras carga */
     }
 
     #btn-cargar {
-      padding: 8px 16px;
+      padding: 8px 15px;
       background: #b30000;
-      color: #fff;
+      color: white;
       border: none;
       border-radius: 4px;
       cursor: pointer;
       font-weight: bold;
-      transition: background 0.3s;
-    }
-    #btn-cargar:hover { background: #e60000; }
-    #btn-cargar:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    #status { font-size: 0.85rem; color: #aaa; }
-
-    /* Contenedor del Mapa */
-    #map {
-      flex-grow: 1; /* Ocupa todo el espacio restante */
-      width: 100%;
-      background: #0b0b0b; /* Color de fondo mientras cargan las teselas */
+      margin-right: 15px;
     }
 
-    /* FIX CRÍTICO: Evitar que las teselas se descuadren */
-    .leaflet-container img.leaflet-tile {
-      max-width: none !important;
-      max-height: none !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      box-shadow: none !important;
+    #status { font-size: 0.9rem; color: #ccc; }
+
+    /* PARCHE CRÍTICO: Forzar visualización de teselas */
+    .leaflet-tile-container img {
+      box-shadow: 0 0 1px rgba(0,0,0,0.05); /* Ayuda al renderizado en Chrome */
     }
   </style>
 </head>
@@ -75,87 +68,62 @@
 
   <div id="top-bar">
     <button id="btn-cargar">Cargar Hotspots</button>
-    <span id="status">Listo para buscar actividad...</span>
+    <span id="status">Esperando...</span>
   </div>
 
   <div id="map"></div>
 
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin="">
-  </script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    // Inicializar mapa centrado en España
-    var map = L.map('map', {
-        zoomAnimation: true,
-        fadeAnimation: true
-    }).setView([40.4167, -3.7037], 6);
+    // 1. Inicializar el mapa sin vista previa para evitar el error de tiles negros
+    var map = L.map('map');
 
-    // Usamos un estilo oscuro de CartoDB que es más estable
+    // 2. Usar un proveedor muy ligero y estable
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap &copy; CARTO'
+      attribution: '&copy; OpenStreetMap',
+      maxZoom: 19
     }).addTo(map);
 
-    // Función para corregir el tamaño del mapa (Fix para teselas descuadradas)
-    function fixMapSize() {
-        setTimeout(() => {
-            map.invalidateSize(true);
-        }, 200);
+    // 3. Centrar el mapa DESPUÉS de un pequeño retraso para que el DOM esté listo
+    function resetView() {
+      map.setView([40.41, -3.70], 6);
+      map.invalidateSize(); // Esto arregla el descuadre
     }
 
-    // Corregir al cargar y al redimensionar
-    window.addEventListener('load', fixMapSize);
-    window.addEventListener('resize', fixMapSize);
+    // Ejecutar al cargar la página
+    window.addEventListener('load', () => {
+      setTimeout(resetView, 300);
+    });
 
-    let capaMarcadores = L.layerGroup().addTo(map);
+    // Lógica del botón
     const btn = document.getElementById('btn-cargar');
     const statusEl = document.getElementById('status');
+    let capa = L.layerGroup().addTo(map);
 
     btn.addEventListener('click', async () => {
       btn.disabled = true;
-      statusEl.textContent = 'Accediendo a archivos confidenciales...';
+      statusEl.textContent = 'Buscando actividades...';
 
       try {
-        // Asegúrate de que hotspots.json esté en la misma carpeta
         const resp = await fetch('hotspots.json');
-        if (!resp.ok) throw new Error('No se encontró hotspots.json');
-        
+        if (!resp.ok) throw new Error();
         const datos = await resp.json();
 
-        if (!Array.isArray(datos) || datos.length === 0) {
-          statusEl.textContent = 'No se detectaron hotspots.';
-          btn.disabled = false;
-          return;
-        }
-
         let i = 0;
-        const lote = 15; // Añadimos de 15 en 15 para suavidad
-        const delay = 300;
-
         const timer = setInterval(() => {
-          for (let j = 0; j < lote && i < datos.length; j++, i++) {
+          for (let j = 0; j < 10 && i < datos.length; j++, i++) {
             const p = datos[i];
-            if (typeof p.lat === 'number' && typeof p.lng === 'number') {
-              L.marker([p.lat, p.lng])
-                .addTo(capaMarcadores)
-                .bindPopup(`<b>${p.titulo || 'Desconocido'}</b><br>${p.descripcion || ''}`);
-            }
+            L.marker([p.lat, p.lng])
+             .addTo(capa)
+             .bindPopup(`<b>${p.titulo}</b>`);
           }
-
-          statusEl.textContent = `Registrados ${i} de ${datos.length} puntos...`;
-
-          if (i >= datos.length) {
-            clearInterval(timer);
-            statusEl.textContent = `Carga finalizada: ${datos.length} hotspots activos.`;
-          }
-        }, delay);
+          statusEl.textContent = `Puntos: ${i} / ${datos.length}`;
+          if (i >= datos.length) clearInterval(timer);
+        }, 200);
 
       } catch (e) {
-        console.error(e);
-        statusEl.textContent = 'Error: Inicia un servidor local para leer el JSON.';
+        statusEl.textContent = 'Error: ¿Has abierto el archivo con un servidor local?';
         btn.disabled = false;
       }
     });
