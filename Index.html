@@ -59,11 +59,14 @@
       height: calc(100vh - 40px); /* 40px aprox de la barra */
     }
 
-    /* Proteger imágenes de Leaflet frente a estilos globales */
-    img {
+    /* Imágenes de contenido (NO las del mapa) */
+    body > img,
+    #top-bar img {
       max-width: 100%;
       height: auto;
     }
+
+    /* Proteger imágenes de Leaflet frente a estilos globales */
     .leaflet-container img,
     .leaflet-tile,
     .leaflet-marker-icon,
@@ -77,7 +80,7 @@
 <body>
 
   <div id="top-bar">
-    <button id="btn-cargar">Cargar puntos</button>
+    <button id="btn-cargar">Cargar puntosss</button>
     <span id="status">Pulsa el botón para empezar...</span>
   </div>
 
@@ -98,7 +101,7 @@
       attribution: '&copy; OpenStreetMap'
     }).addTo(map);
 
-    // Asegurar tamaño correcto al cargar
+    // Asegurar tamaño correcto al cargar y redimensionar
     window.addEventListener('load', function () {
       setTimeout(function () {
         map.invalidateSize();
