@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hotspots Paranormales</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+  <div id="map" style="height: 100vh;"></div>
+  <div id="g_id_onload"
+       data-client_id="TU_CLIENT_ID.apps.googleusercontent.com"
+       data-callback="handleCredentialResponse">
+  </div>
+  <script>
+    // Inicializa mapa
+    var map = L.map('map').setView([37.18, -5.79], 6); // Utrera área
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    // Carga datos ejemplo (reemplaza con fetch('hotspots.json'))
+    var hotspots = [{lat: 37.175, lng: -5.796, popup: 'Utrera Factory alta actividad'}]; // De dataset
+    hotspots.forEach(p => L.marker([p.lat, p.lng]).addTo(map).bindPopup(p.popup));
+  </script>
+</body>
+</html>
