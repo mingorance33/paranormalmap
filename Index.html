@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Hotspots Paranormales</title>
 
-  <!-- CSS Leaflet -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -14,74 +13,69 @@
   />
 
   <style>
+    /* Reset básico */
     html, body {
       height: 100%;
       margin: 0;
       padding: 0;
+      overflow: hidden; /* Evita scrolls extraños */
     }
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: #000;
       color: #eee;
+      display: flex;
+      flex-direction: column;
     }
 
-    /* Barra simple arriba (sin flex layout general) */
     #top-bar {
-      padding: 8px 10px;
-      background: #111;
-      display: inline-flex;
-      gap: 8px;
+      height: 50px;
+      padding: 0 15px;
+      background: #1a1a1a;
+      display: flex;
+      gap: 15px;
       align-items: center;
-      width: 100%;
-      box-sizing: border-box;
+      border-bottom: 1px solid #333;
+      z-index: 1000; /* Por encima del mapa */
     }
+
     #btn-cargar {
-      padding: 6px 10px;
+      padding: 8px 16px;
       background: #b30000;
       color: #fff;
       border: none;
       border-radius: 4px;
       cursor: pointer;
       font-weight: bold;
+      transition: background 0.3s;
     }
-    #btn-cargar:disabled {
-      opacity: 0.5;
-      cursor: default;
-    }
-    #status {
-      font-size: 0.9rem;
-      color: #ccc;
-    }
+    #btn-cargar:hover { background: #e60000; }
+    #btn-cargar:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* El mapa ocupa el resto de la ventana */
+    #status { font-size: 0.85rem; color: #aaa; }
+
+    /* Contenedor del Mapa */
     #map {
+      flex-grow: 1; /* Ocupa todo el espacio restante */
       width: 100%;
-      height: calc(100vh - 40px); /* 40px aprox de la barra */
+      background: #0b0b0b; /* Color de fondo mientras cargan las teselas */
     }
 
-    /* Imágenes de contenido (NO las del mapa) */
-    body > img,
-    #top-bar img {
-      max-width: 100%;
-      height: auto;
-    }
-
-    /* Proteger imágenes de Leaflet frente a estilos globales */
-    .leaflet-container img,
-    .leaflet-tile,
-    .leaflet-marker-icon,
-    .leaflet-marker-shadow {
+    /* FIX CRÍTICO: Evitar que las teselas se descuadren */
+    .leaflet-container img.leaflet-tile {
       max-width: none !important;
-      height: auto !important;
-      object-fit: none !important;
+      max-height: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      box-shadow: none !important;
     }
   </style>
 </head>
 <body>
 
   <div id="top-bar">
-    <button id="btn-cargar">Cargar puntosss</button>
-    <span id="status">Pulsa el botón para empezar...</span>
+    <button id="btn-cargar">Cargar Hotspots</button>
+    <span id="status">Listo para buscar actividad...</span>
   </div>
 
   <div id="map"></div>
@@ -93,72 +87,75 @@
   </script>
 
   <script>
-    // Crear mapa
-    var map = L.map('map').setView([37.18, -5.79], 6);
+    // Inicializar mapa centrado en España
+    var map = L.map('map', {
+        zoomAnimation: true,
+        fadeAnimation: true
+    }).setView([40.4167, -3.7037], 6);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Usamos un estilo oscuro de CartoDB que es más estable
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
       maxZoom: 19,
-      attribution: '&copy; OpenStreetMap'
+      attribution: '&copy; OpenStreetMap &copy; CARTO'
     }).addTo(map);
 
-    // Asegurar tamaño correcto al cargar y redimensionar
-    window.addEventListener('load', function () {
-      setTimeout(function () {
-        map.invalidateSize();
-      }, 200);
-    });
-    window.addEventListener('resize', function () {
-      map.invalidateSize();
-    });
+    // Función para corregir el tamaño del mapa (Fix para teselas descuadradas)
+    function fixMapSize() {
+        setTimeout(() => {
+            map.invalidateSize(true);
+        }, 200);
+    }
 
-    // Capa marcadores
-    let capa = L.layerGroup().addTo(map);
+    // Corregir al cargar y al redimensionar
+    window.addEventListener('load', fixMapSize);
+    window.addEventListener('resize', fixMapSize);
 
+    let capaMarcadores = L.layerGroup().addTo(map);
     const btn = document.getElementById('btn-cargar');
     const statusEl = document.getElementById('status');
 
     btn.addEventListener('click', async () => {
       btn.disabled = true;
-      statusEl.textContent = 'Descargando datos paranormales...';
+      statusEl.textContent = 'Accediendo a archivos confidenciales...';
 
       try {
+        // Asegúrate de que hotspots.json esté en la misma carpeta
         const resp = await fetch('hotspots.json');
-        if (!resp.ok) throw new Error('No se pudo cargar hotspots.json');
+        if (!resp.ok) throw new Error('No se encontró hotspots.json');
+        
         const datos = await resp.json();
 
         if (!Array.isArray(datos) || datos.length === 0) {
-          statusEl.textContent = 'No hay datos en hotspots.json.';
+          statusEl.textContent = 'No se detectaron hotspots.';
           btn.disabled = false;
           return;
         }
 
         let i = 0;
-        const lote = 20;
-        const delay = 500;
-
-        statusEl.textContent = 'Añadiendo puntos al mapa...';
+        const lote = 15; // Añadimos de 15 en 15 para suavidad
+        const delay = 300;
 
         const timer = setInterval(() => {
           for (let j = 0; j < lote && i < datos.length; j++, i++) {
             const p = datos[i];
-            if (typeof p.lat !== 'number' || typeof p.lng !== 'number') continue;
-
-            L.marker([p.lat, p.lng])
-              .addTo(capa)
-              .bindPopup(`<b>${p.titulo || 'Punto paranormal'}</b><br>${p.descripcion || ''}`);
+            if (typeof p.lat === 'number' && typeof p.lng === 'number') {
+              L.marker([p.lat, p.lng])
+                .addTo(capaMarcadores)
+                .bindPopup(`<b>${p.titulo || 'Desconocido'}</b><br>${p.descripcion || ''}`);
+            }
           }
 
-          statusEl.textContent = `Añadidos ${i} / ${datos.length} puntos...`;
+          statusEl.textContent = `Registrados ${i} de ${datos.length} puntos...`;
 
           if (i >= datos.length) {
             clearInterval(timer);
-            statusEl.textContent = `Carga completada: ${datos.length} puntos paranormales.`;
+            statusEl.textContent = `Carga finalizada: ${datos.length} hotspots activos.`;
           }
         }, delay);
 
       } catch (e) {
         console.error(e);
-        statusEl.textContent = 'Error al cargar los datos. Revisa hotspots.json.';
+        statusEl.textContent = 'Error: Inicia un servidor local para leer el JSON.';
         btn.disabled = false;
       }
     });
