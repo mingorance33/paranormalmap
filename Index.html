@@ -8,41 +8,32 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <style>
-    /* Aseguramos que el HTML y BODY ocupen todo el alto */
     html, body {
       height: 100%;
       width: 100%;
       margin: 0;
       padding: 0;
-      background: #000;
-      overflow: hidden; /* Evita scrolls dobles */
+      background: #000; /* Fondo base negro */
     }
 
-    /* Barra superior fija */
     #top-bar {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
+      top: 0; left: 0; width: 100%;
       height: 50px;
       background: #111;
-      color: white;
       display: flex;
       align-items: center;
       padding: 0 15px;
       box-sizing: border-box;
-      z-index: 2000; /* Siempre por encima del mapa */
+      z-index: 2000;
       border-bottom: 1px solid #333;
     }
 
-    /* Contenedor del mapa fijo ocupando el resto */
+    /* El mapa debe tener un fondo gris oscuro inicial para notar si cargan las piezas */
     #map {
       position: absolute;
-      top: 50px; /* Debajo de la barra */
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #000; /* Fondo negro mientras carga */
+      top: 50px; bottom: 0; left: 0; right: 0;
+      background: #1a1a1a; 
     }
 
     #btn-cargar {
@@ -53,14 +44,16 @@
       border-radius: 4px;
       cursor: pointer;
       font-weight: bold;
-      margin-right: 15px;
     }
 
-    #status { font-size: 0.9rem; color: #ccc; }
+    #status { margin-left: 15px; font-size: 0.9rem; color: #ccc; font-family: sans-serif; }
 
-    /* PARCHE CRÍTICO: Forzar visualización de teselas */
-    .leaflet-tile-container img {
-      box-shadow: 0 0 1px rgba(0,0,0,0.05); /* Ayuda al renderizado en Chrome */
+    /* FIX: Prevenir parpadeos y asegurar visibilidad de las teselas */
+    .leaflet-tile {
+      visibility: inherit !important;
+    }
+    .leaflet-container {
+      background: #000 !important;
     }
   </style>
 </head>
@@ -68,7 +61,7 @@
 
   <div id="top-bar">
     <button id="btn-cargar">Cargar Hotspots</button>
-    <span id="status">Esperando...</span>
+    <span id="status">Iniciando sistema...</span>
   </div>
 
   <div id="map"></div>
@@ -76,54 +69,56 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    // 1. Inicializar el mapa sin vista previa para evitar el error de tiles negros
-    var map = L.map('map');
+    // 1. Inicializamos el mapa sin coordenadas todavía
+    var map = L.map('map', {
+        fadeAnimation: false, // Desactivamos animaciones iniciales para evitar cuadros negros
+        zoomControl: true
+    });
 
-    // 2. Usar un proveedor muy ligero y estable
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    // 2. Capa de mapa (CartoDB Dark es la más estable para temas oscuros)
+    var tiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap',
       maxZoom: 19
     }).addTo(map);
 
-    // 3. Centrar el mapa DESPUÉS de un pequeño retraso para que el DOM esté listo
-    function resetView() {
-      map.setView([40.41, -3.70], 6);
-      map.invalidateSize(); // Esto arregla el descuadre
+    // 3. Función CRÍTICA para que no salga negro
+    function inicializarMapa() {
+        // Establecemos la vista
+        map.setView([37.18, -5.79], 12); 
+        
+        // Forzamos a Leaflet a recalcular el tamaño del contenedor
+        setTimeout(function() {
+            map.invalidateSize(true);
+            document.getElementById('status').textContent = 'Mapa listo. Pulsa Cargar.';
+        }, 500);
     }
 
-    // Ejecutar al cargar la página
-    window.addEventListener('load', () => {
-      setTimeout(resetView, 300);
-    });
+    // Ejecutar al terminar de cargar la ventana
+    window.onload = inicializarMapa;
 
-    // Lógica del botón
-    const btn = document.getElementById('btn-cargar');
-    const statusEl = document.getElementById('status');
+    // Lógica de carga de puntos
     let capa = L.layerGroup().addTo(map);
+    const btn = document.getElementById('btn-cargar');
 
     btn.addEventListener('click', async () => {
       btn.disabled = true;
-      statusEl.textContent = 'Buscando actividades...';
+      document.getElementById('status').textContent = 'Descargando datos...';
 
       try {
         const resp = await fetch('hotspots.json');
-        if (!resp.ok) throw new Error();
         const datos = await resp.json();
 
-        let i = 0;
-        const timer = setInterval(() => {
-          for (let j = 0; j < 10 && i < datos.length; j++, i++) {
-            const p = datos[i];
-            L.marker([p.lat, p.lng])
-             .addTo(capa)
-             .bindPopup(`<b>${p.titulo}</b>`);
-          }
-          statusEl.textContent = `Puntos: ${i} / ${datos.length}`;
-          if (i >= datos.length) clearInterval(timer);
-        }, 200);
+        datos.forEach((p, index) => {
+            if(p.lat && p.lng) {
+                L.marker([p.lat, p.lng])
+                 .addTo(capa)
+                 .bindPopup(`<b>${p.titulo}</b><br>${p.descripcion || ''}`);
+            }
+        });
 
+        document.getElementById('status').textContent = `Cargados ${datos.length} puntos.`;
       } catch (e) {
-        statusEl.textContent = 'Error: ¿Has abierto el archivo con un servidor local?';
+        document.getElementById('status').textContent = 'Error: Necesitas un servidor local (Live Server).';
         btn.disabled = false;
       }
     });
