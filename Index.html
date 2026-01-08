@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Hotspots Paranormales</title>
 
-  <!-- CSS de Leaflet -->
+  <!-- CSS Leaflet -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -14,7 +14,6 @@
   />
 
   <style>
-    /* Estructura base */
     html, body {
       height: 100%;
       margin: 0;
@@ -24,19 +23,17 @@
       font-family: Arial, sans-serif;
       background: #000;
       color: #eee;
-      display: flex;
-      flex-direction: column;
     }
 
-    /* Barra superior */
+    /* Barra simple arriba (sin flex layout general) */
     #top-bar {
       padding: 8px 10px;
       background: #111;
-      display: flex;
+      display: inline-flex;
       gap: 8px;
       align-items: center;
-      flex-shrink: 0;
-      z-index: 1000;
+      width: 100%;
+      box-sizing: border-box;
     }
     #btn-cargar {
       padding: 6px 10px;
@@ -56,14 +53,13 @@
       color: #ccc;
     }
 
-    /* Contenedor del mapa: ocupa todo el alto restante */
+    /* El mapa ocupa el resto de la ventana */
     #map {
-      flex: 1 1 auto;
       width: 100%;
+      height: calc(100vh - 40px); /* 40px aprox de la barra */
     }
 
-    /* --- PARCHE IMPORTANTE PARA LEAFLET --- */
-    /* Evitar que reglas globales de img rompan las teselas */
+    /* Proteger imágenes de Leaflet frente a estilos globales */
     img {
       max-width: 100%;
       height: auto;
@@ -74,14 +70,7 @@
     .leaflet-marker-shadow {
       max-width: none !important;
       height: auto !important;
-      box-shadow: none !important;
       object-fit: none !important;
-    }
-
-    /* Parche clásico para evitar líneas entre teselas en algunos navegadores */
-    .leaflet-tile {
-      width: 257px !important;
-      height: 257px !important;
     }
   </style>
 </head>
@@ -94,7 +83,6 @@
 
   <div id="map"></div>
 
-  <!-- JS de Leaflet -->
   <script
     src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
@@ -102,19 +90,15 @@
   </script>
 
   <script>
-    // Inicializa el mapa
-    var map = L.map('map', {
-      zoomSnap: 0.5,
-      zoomDelta: 0.5
-    }).setView([37.18, -5.79], 6);
+    // Crear mapa
+    var map = L.map('map').setView([37.18, -5.79], 6);
 
-    // Capa de teselas OSM
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; OpenStreetMap'
     }).addTo(map);
 
-    // Ajustar tamaño al cargar y al redimensionar
+    // Asegurar tamaño correcto al cargar
     window.addEventListener('load', function () {
       setTimeout(function () {
         map.invalidateSize();
@@ -124,7 +108,7 @@
       map.invalidateSize();
     });
 
-    // Capa de marcadores
+    // Capa marcadores
     let capa = L.layerGroup().addTo(map);
 
     const btn = document.getElementById('btn-cargar');
@@ -135,10 +119,9 @@
       statusEl.textContent = 'Descargando datos paranormales...';
 
       try {
-        // hotspots.json debe estar en la misma carpeta que index.html
         const resp = await fetch('hotspots.json');
         if (!resp.ok) throw new Error('No se pudo cargar hotspots.json');
-        const datos = await resp.json(); // [{lat,lng,titulo,descripcion}, ...]
+        const datos = await resp.json();
 
         if (!Array.isArray(datos) || datos.length === 0) {
           statusEl.textContent = 'No hay datos en hotspots.json.';
@@ -147,8 +130,8 @@
         }
 
         let i = 0;
-        const lote = 20;   // puntos por oleada
-        const delay = 500; // ms entre oleadas
+        const lote = 20;
+        const delay = 500;
 
         statusEl.textContent = 'Añadiendo puntos al mapa...';
 
