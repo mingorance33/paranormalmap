@@ -3,95 +3,99 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Radar Paranormal Wikipedia</title>
+  <title>Solo Hotspots Paranormales</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
-    body { margin: 0; padding: 0; background: #050505; }
+    body { margin: 0; padding: 0; background: #000; }
     #map { height: 100vh; width: 100vw; }
     #loader {
       position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
-      z-index: 1000; background: rgba(255,0,0,0.9); color: white;
-      padding: 10px 20px; font-family: monospace; border: 2px solid white;
-      display: none; box-shadow: 0 0 20px red;
+      z-index: 1000; background: #ff0000; color: white; padding: 10px 20px;
+      font-family: 'Courier New', monospace; font-weight: bold;
+      border: 2px solid white; display: none; box-shadow: 0 0 20px rgba(255,0,0,0.7);
     }
   </style>
 </head>
 <body>
 
-  <div id="loader">ESCANEANDO REGISTROS DE WIKIPEDIA...</div>
+  <div id="loader">FILTRANDO ACTIVIDAD PARANORMAL...</div>
   <div id="map"></div>
 
   <script>
-    var map = L.map('map').setView([37.38, -5.98], 12); // Sevilla/Carmona
+    var map = L.map('map').setView([37.38, -5.98], 12); // Centro en Sevilla
     
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; Wikipedia Contributors'
+      attribution: '&copy; OpenStreetMap & Wikipedia'
     }).addTo(map);
 
     var markersLayer = L.layerGroup().addTo(map);
 
-    async function buscarEnWikipedia() {
-      document.getElementById('loader').style.display = 'block';
+    // DICCIONARIO DE FILTRADO (Solo si contiene esto, se muestra)
+    const keywordsParanormales = [
+      "paranormal", "fantasma", "espíritu", "aparición", "leyenda negra", 
+      "psicofonía", "misterio", "maldito", "encantado", "poltergeist", 
+      "diablo", "demonio", "extraño", "fenómeno", "espanto"
+    ];
+
+    async function buscarSoloParanormal() {
+      const loader = document.getElementById('loader');
+      loader.style.display = 'block';
       markersLayer.clearLayers();
 
       const center = map.getCenter();
-      // Wikipedia busca en un radio desde el centro del mapa (en metros)
-      const radius = 10000; 
-      
-      // 1. Buscamos artículos cercanos con coordenadas
-      const url = `https://es.wikipedia.org/w/api.php?action=query&list=geosearch&gsradius=${radius}&gscoord=${center.lat}|${center.lng}&format=json&origin=*&gslimit=50`;
+      const radius = 15000; // 15km a la redonda
+
+      // 1. Buscamos artículos geolocalizados
+      const geoUrl = `https://es.wikipedia.org/w/api.php?action=query&list=geosearch&gsradius=${radius}&gscoord=${center.lat}|${center.lng}&format=json&origin=*&gslimit=100`;
 
       try {
-        const response = await fetch(url);
-        const data = await response.json();
-        const locations = data.query.geosearch;
+        const geoRes = await fetch(geoUrl);
+        const geoData = await geoRes.json();
+        const locations = geoData.query.geosearch;
 
         for (let loc of locations) {
-          // 2. Por cada lugar, pedimos un resumen para ver si es "interesante" (paranormal/histórico)
-          const detailUrl = `https://es.wikipedia.org/w/api.php?action=query&prop=extracts|info&exintro&titles=${encodeURIComponent(loc.title)}&format=json&origin=*&inprop=url`;
-          const detRes = await fetch(detailUrl);
-          const detData = await detRes.json();
-          const page = Object.values(detData.query.pages)[0];
-          const text = page.extract ? page.extract.toLowerCase() : "";
-          const fullUrl = page.fullurl;
+          // 2. Analizamos el contenido de cada artículo para confirmar lo paranormal
+          const contentUrl = `https://es.wikipedia.org/w/api.php?action=query&prop=extracts&exintro&explaintext&titles=${encodeURIComponent(loc.title)}&format=json&origin=*`;
+          const contentRes = await fetch(contentUrl);
+          const contentData = await contentRes.json();
+          const page = Object.values(contentData.query.pages)[0];
+          const extract = page.extract ? page.extract.toLowerCase() : "";
 
-          // Filtro de "Interés": ¿Contiene palabras clave?
-          const keywords = ["leyenda", "misterio", "fantasma", "aparición", "monasterio", "crimen", "abandonado", "ruinas", "convento", "palacio"];
-          const matches = keywords.some(word => text.includes(word));
+          // 3. VALIDACIÓN ESTRICTA: ¿Es paranormal?
+          const esParanormal = keywordsParanormales.some(word => extract.includes(word));
 
-          if (matches || loc.title.toLowerCase().includes("monasterio") || loc.title.toLowerCase().includes("diablo")) {
-            // 3. Insertamos en el mapa
+          if (esParanormal) {
             const marker = L.circleMarker([loc.lat, loc.lon], {
-              radius: 12,
+              radius: 14,
               fillColor: "#ff0000",
               color: "#fff",
               weight: 2,
-              fillOpacity: 0.8
+              fillOpacity: 0.9
             }).addTo(markersLayer);
 
             marker.bindPopup(`
-              <div style="font-family:sans-serif;">
-                <h3 style="margin:0">${loc.title}</h3>
-                <p style="font-size:12px; color:#666;">Distancia: ${loc.dist}m</p>
-                <p style="font-size:13px;">${text.substring(0, 150)}...</p>
-                <a href="${fullUrl}" target="_blank" style="color:red; font-weight:bold;">Leer historia completa</a>
+              <div style="font-family:sans-serif; min-width:200px;">
+                <h3 style="margin:0; color:#d32f2f;">${loc.title}</h3>
+                <hr>
+                <p style="font-size:13px; line-height:1.4;">${extract.substring(0, 200)}...</p>
+                <a href="https://es.wikipedia.org/?curid=${page.pageid}" target="_blank" style="color:#d32f2f; font-weight:bold;">INVESTIGAR MÁS</a>
               </div>
             `);
           }
         }
       } catch (e) {
-        console.error("Error cargando Wikipedia", e);
+        console.error("Error en el radar paranormal:", e);
       } finally {
-        document.getElementById('loader').style.display = 'none';
+        loader.style.display = 'none';
       }
     }
 
-    // Escuchar cuando el usuario deja de mover el mapa
-    map.on('moveend', buscarEnWikipedia);
+    // Evento al terminar de mover el mapa
+    map.on('moveend', buscarSoloParanormal);
     
     // Carga inicial
-    buscarEnWikipedia();
+    buscarSoloParanormal();
   </script>
 </body>
 </html>
