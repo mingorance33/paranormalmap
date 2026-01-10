@@ -3,64 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Radar Paranormal</title>
+  <title>Radar de Misterio Sevilla</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
-    body { margin: 0; padding: 0; background: #000; }
+    body { margin: 0; padding: 0; background: #0a0a0a; }
     #map { height: 100vh; width: 100vw; }
     #status {
-      position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-      z-index: 1000; background: rgba(255, 0, 0, 0.8); color: white;
-      padding: 8px 15px; border-radius: 4px; font-family: 'Courier New', Courier, monospace;
-      font-size: 12px; border: 1px solid white; display: none;
+      position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
+      z-index: 1000; background: #8b0000; color: white;
+      padding: 10px 20px; border-radius: 2px; font-family: 'Courier New', monospace;
+      font-weight: bold; border: 2px solid #ff0000; display: none;
+      box-shadow: 0 0 15px rgba(255,0,0,0.5);
     }
   </style>
 </head>
 <body>
 
-  <div id="status">ESCANEANDO ÁREA...</div>
+  <div id="status">RASTREANDO ACTIVIDAD...</div>
   <div id="map"></div>
 
   <script>
-    // Inicialización con coordenadas de Utrera
-    var map = L.map('map').setView([37.18, -5.79], 12);
+    // Centramos inicialmente en Sevilla/Carmona donde está el Monasterio del Diablo
+    var map = L.map('map').setView([37.38, -5.98], 11);
     
-    // Cambiado a OpenStreetMap estándar para evitar errores de carga de capas oscuras
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap'
     }).addTo(map);
 
     var markersLayer = L.layerGroup().addTo(map);
     var statusEl = document.getElementById('status');
 
-    // Función de verificación en internet
-    async function validarParanormal(nombre) {
+    // Función de búsqueda mejorada
+    async function tienePresenciaInternet(nombre) {
       if (!nombre) return false;
-      // Buscamos el nombre del lugar junto a términos clave
-      const terminos = encodeURIComponent(`"${nombre}" paranormal misterio leyendas`);
-      const url = `https://api.duckduckgo.com/?q=${terminos}&format=json`;
+      
+      // Intentamos una búsqueda más amplia
+      const searchTerms = `${nombre} misterio paranormal leyendas`;
+      const url = `https://api.duckduckgo.com/?q=${encodeURIComponent(searchTerms)}&format=json&no_html=1`;
 
       try {
         const res = await fetch(url);
         const data = await res.json();
-        // Verificamos si hay texto descriptivo o enlaces relacionados
-        return (data.AbstractText.length > 0 || data.RelatedTopics.length > 0);
+        // El Monasterio del Diablo suele aparecer en RelatedTopics o Abstract
+        return (data.AbstractText !== "" || data.RelatedTopics.length > 0 || data.Results.length > 0);
       } catch (e) {
         return false;
       }
     }
 
-    async function escanearMapa() {
+    async function escanear() {
       statusEl.style.display = 'block';
       const b = map.getBounds();
       const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
 
-      // Query para buscar los topónimos que pediste
-      const query = `[out:json][timeout:25];(
-        node["name"~"Cortijo|Hacienda|Venta|Fábrica|Torre|Cementerio|Monasterio|Iglesia",i](${bbox});
-        way["name"~"Cortijo|Hacienda|Venta|Fábrica|Torre|Cementerio|Monasterio|Iglesia",i](${bbox});
-      );out center;`;
+      // Query de Overpass más amplia para no perder edificios históricos/en ruinas
+      const query = `[out:json][timeout:30];
+        (
+          node["name"~"Monasterio|Cortijo|Hacienda|Fábrica|Cementerio|Torre|Iglesia",i](${bbox});
+          way["name"~"Monasterio|Cortijo|Hacienda|Fábrica|Cementerio|Torre|Iglesia",i](${bbox});
+          node["historic"~"ruins|monastery|castle"](${bbox});
+          way["historic"~"ruins|monastery|castle"](${bbox});
+        );
+        out center;`;
 
       try {
         const response = await fetch("https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(query));
@@ -68,38 +73,48 @@
         
         markersLayer.clearLayers();
 
-        // Procesar resultados
         for (let item of data.elements) {
-          const nombre = item.tags.name;
+          const tags = item.tags || {};
+          const nombre = tags.name || "Lugar sin nombre";
           const lat = item.lat || item.center.lat;
           const lon = item.lon || item.center.lon;
 
-          // COTEJO: Solo si se encuentra en internet se dibuja
-          const tieneRegistro = await validarParanormal(nombre);
+          // Verificación: si es un nombre conocido como "Monasterio del Diablo" 
+          // o si pasa el filtro de internet.
+          const esConocido = nombre.toLowerCase().includes("diablo") || 
+                             nombre.toLowerCase().includes("miedo") ||
+                             nombre.toLowerCase().includes("muerte");
+          
+          const internetCheck = await tienePresenciaInternet(nombre);
 
-          if (tieneRegistro) {
-            L.circleMarker([lat, lon], {
-              radius: 10,
+          if (internetCheck || esConocido) {
+            const marker = L.circleMarker([lat, lon], {
+              radius: 12,
               fillColor: "#ff0000",
               color: "#fff",
-              weight: 2,
-              fillOpacity: 0.9
-            }).addTo(markersLayer)
-              .bindPopup(`<b>${nombre}</b><br><hr>Confirmado registro paranormal/histórico.<br><br><a href="https://www.google.com/search?q=${encodeURIComponent(nombre + ' paranormal')}" target="_blank">Ver investigación</a>`);
+              weight: 3,
+              fillOpacity: 0.8
+            }).addTo(markersLayer);
+
+            marker.bindPopup(`
+              <div style="background:#000; color:#fff; padding:10px; border:1px solid red;">
+                <strong style="font-size:1.2em;">${nombre}</strong><br><br>
+                <span style="color:#ff4444;">⚠ ACTIVIDAD DETECTADA EN LA RED</span><hr>
+                <a href="https://www.google.com/search?q=${encodeURIComponent(nombre + ' sevilla paranormal')}" 
+                   target="_blank" style="color:#00ff00; text-decoration:none;">➔ ABRIR EXPEDIENTE</a>
+              </div>
+            `);
           }
         }
       } catch (err) {
-        console.error("Error de conexión");
+        console.error("Error en radar");
       } finally {
         statusEl.style.display = 'none';
       }
     }
 
-    // Escuchar cambios en el mapa
-    map.on('moveend', escanearMapa);
-    
-    // Ejecución inicial
-    escanearMapa();
+    map.on('moveend', escanear);
+    escanear();
   </script>
 </body>
 </html>
