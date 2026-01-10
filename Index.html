@@ -3,126 +3,131 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Radar de Topónimos Paranormales</title>
+  <title>Radar Paranormal Estable</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
-    body { margin: 0; padding: 0; background: #0a0a0a; color: white; font-family: sans-serif; }
-    #map { height: 100vh; width: 100vw; }
-    #panel {
-      position: absolute; top: 10px; right: 10px; z-index: 1000;
-      background: rgba(0,0,0,0.8); padding: 15px; border: 1px solid #ff0000;
-      max-width: 250px; font-size: 12px;
+    body { margin: 0; padding: 0; background: #000; color: #0f0; font-family: monospace; }
+    #map { height: 100vh; width: 100vw; z-index: 1; }
+    #interface {
+      position: absolute; top: 10px; left: 10px; z-index: 1000;
+      background: rgba(0, 20, 0, 0.9); padding: 15px;
+      border: 1px solid #0f0; pointer-events: none;
     }
-    .loading { color: #ff0000; font-weight: bold; animation: blink 1s infinite; }
-    @keyframes blink { 50% { opacity: 0; } }
+    .status-ok { color: #0f0; }
+    .status-error { color: #f00; font-weight: bold; }
   </style>
 </head>
 <body>
 
-  <div id="panel">
-    <strong>Estado:</strong> <span id="status">Esperando movimiento...</span><br>
-    <strong>Provincia:</strong> <span id="provincia">-</span><br>
-    <hr>
-    <small>Buscando: Cortijos, Haciendas, Monasterios, Fábricas, Cementerios...</small>
+  <div id="interface">
+    <div>SISTEMA: <span id="status">INICIALIZANDO...</span></div>
+    <div>PROVINCIA: <span id="prov">-</span></div>
+    <div>HALLAZGOS: <span id="count">0</span></div>
   </div>
   <div id="map"></div>
 
   <script>
-    var map = L.map('map').setView([37.38, -5.98], 11); // Inicio en Sevilla
+    // Configuración inicial
+    var map = L.map('map').setView([37.38, -5.98], 12);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
     var markersLayer = L.layerGroup().addTo(map);
 
-    // 1. Obtener la provincia mediante Geocodificación Inversa (Nominatim)
-    async function obtenerProvincia() {
-      const center = map.getCenter();
-      const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${center.lat}&lon=${center.lng}`;
+    // 1. Obtener Provincia por Geocodificación
+    async function getProvincia(lat, lon) {
       try {
-        const res = await fetch(url);
-        const data = await res.json();
-        return data.address.province || data.address.state || "Desconocida";
-      } catch (e) { return "Desconocida"; }
+        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+        const d = await r.json();
+        return d.address.province || d.address.state || "Sevilla";
+      } catch (e) { return "Sevilla"; }
     }
 
-    // 2. Simular búsqueda de referencias en Internet
-    // En un entorno real, esto consultaría una API de búsqueda o un dataset.
-    async function contarReferenciasInternet(nombre, provincia) {
-      // Simulamos un volumen de búsqueda basado en la "fama" del topónimo
-      // Los nombres con "Diablo", "Misterio" o muy antiguos generan más refs.
-      const baseRefs = Math.floor(Math.random() * 500);
-      const modificador = nombre.toLowerCase().match(/diablo|miedo|viejo|muerte|monasterio/) ? 50 : 1;
-      return baseRefs * modificador;
+    // 2. Buscar referencias reales en Wikipedia/Web (Simulado por API rápida)
+    async function getPopularidad(nombre, prov) {
+      // Usamos la API de Wikipedia como termómetro de "fama"
+      const url = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(nombre + " " + prov)}&format=json&origin=*`;
+      try {
+        const r = await fetch(url);
+        const d = await r.json();
+        return d.query.searchinfo.totalhits; // Devuelve cuántas páginas hablan de esto
+      } catch (e) { return 0; }
     }
 
-    // 3. Función principal: Buscar topónimos e insertar puntos
-    async function procesarRadar() {
-      const statusEl = document.getElementById('status');
-      const provEl = document.getElementById('provincia');
-      
-      statusEl.className = "loading";
-      statusEl.innerText = "RASTREANDO...";
-      
-      const provincia = await obtenerProvincia();
+    async function escanear() {
+      const status = document.getElementById('status');
+      const provEl = document.getElementById('prov');
+      const countEl = document.getElementById('count');
+
+      status.innerText = "BUSCANDO...";
+      status.className = "status-ok";
+
+      const centro = map.getCenter();
+      const provincia = await getProvincia(centro.lat, centro.lng);
       provEl.innerText = provincia;
 
       const b = map.getBounds();
       const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
 
-      // Consulta Overpass para los tipos solicitados
-      const query = `[out:json][timeout:25];(
-        node["name"~"Cortijo|Hacienda|Venta|Fábrica|Torre|Cementerio|Monasterio|Iglesia",i](${bbox});
-        way["name"~"Cortijo|Hacienda|Venta|Fábrica|Torre|Cementerio|Monasterio|Iglesia",i](${bbox});
+      // Query optimizada para evitar errores 429/500
+      const query = `[out:json][timeout:15];(
+        node["name"~"Cortijo|Hacienda|Monasterio|Fábrica|Cementerio|Torre",i](${bbox});
+        way["name"~"Cortijo|Hacienda|Monasterio|Fábrica|Cementerio|Torre",i](${bbox});
       );out center;`;
 
       try {
         const response = await fetch("https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(query));
-        const data = await response.json();
         
+        if (!response.ok) throw new Error();
+        
+        const data = await response.json();
         markersLayer.clearLayers();
+        let encontrados = 0;
 
         for (let el of data.elements) {
           const nombre = el.tags.name;
           const lat = el.lat || el.center.lat;
           const lon = el.lon || el.center.lon;
-          
-          // Solo procesamos si tiene nombre
-          if (nombre) {
-            const numRefs = await contarReferenciasInternet(nombre, provincia);
 
-            // FILTRO: Solo mostramos si tiene más de X referencias (ej. 500)
-            // Esto asegura que "solo haya algo paranormal" o con interés histórico/leyenda
-            if (numRefs > 400) {
-              const marker = L.circleMarker([lat, lon], {
-                radius: Math.min(numRefs / 500, 15), // El tamaño depende de las referencias
-                fillColor: "#ff0000",
-                color: "#fff",
-                weight: 1,
-                fillOpacity: 0.8
-              }).addTo(markersLayer);
+          // COTEJO: Solo si tiene referencias en internet
+          const nRefs = await getPopularidad(nombre, provincia);
 
-              marker.bindPopup(`
-                <div style="color:black">
-                  <strong>${nombre}</strong><br>
-                  <small>Provincia: ${provincia}</small><hr>
-                  <b>Referencias en la red:</b> ~${numRefs.toLocaleString()}<br>
-                  <a href="https://www.google.com/search?q=${encodeURIComponent(nombre + ' ' + provincia + ' paranormal')}" target="_blank">Ver hilos de misterio</a>
+          // FILTRO: Solo lugares con menciones (paranormales o históricas)
+          if (nRefs > 0 || nombre.toLowerCase().includes("diablo") || nombre.toLowerCase().includes("misterio")) {
+            encontrados++;
+            L.circleMarker([lat, lon], {
+              radius: 10,
+              fillColor: "#f00",
+              color: "#fff",
+              weight: 2,
+              fillOpacity: 0.8
+            }).addTo(markersLayer)
+              .bindPopup(`
+                <div style="color:#000">
+                  <b>${nombre}</b><br>
+                  <i>Provincia: ${provincia}</i><hr>
+                  Referencias: <b>${nRefs}</b><br><br>
+                  <a href="https://www.google.com/search?q=${encodeURIComponent(nombre + ' ' + provincia + ' paranormal')}" target="_blank">Investigar</a>
                 </div>
               `);
-            }
           }
         }
-        statusEl.className = "";
-        statusEl.innerText = "ESCANEO COMPLETO";
+        countEl.innerText = encontrados;
+        status.innerText = "RADAR ACTIVO";
       } catch (err) {
-        statusEl.innerText = "ERROR DE CONEXIÓN";
+        status.innerText = "ERROR DE CONEXIÓN (REINTENTANDO...)";
+        status.className = "status-error";
+        setTimeout(escanear, 5000); // Reintento automático
       }
     }
 
-    // Escuchador de movimiento
-    map.on('moveend', procesarRadar);
-    
-    // Ejecución inicial
-    procesarRadar();
+    // Evitar saturación: solo busca cuando el mapa se deja de mover
+    let t;
+    map.on('moveend', () => {
+      clearTimeout(t);
+      t = setTimeout(escanear, 1500);
+    });
+
+    escanear();
   </script>
 </body>
 </html>
