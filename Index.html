@@ -3,131 +3,138 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Radar Paranormal Estable</title>
+  <title>Filtro Paranormal Estricto</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
-    body { margin: 0; padding: 0; background: #000; color: #0f0; font-family: monospace; }
-    #map { height: 100vh; width: 100vw; z-index: 1; }
-    #interface {
+    body { margin: 0; padding: 0; background: #000; color: #ff0000; font-family: 'Courier New', monospace; }
+    #map { height: 100vh; width: 100vw; }
+    #radar-ui {
       position: absolute; top: 10px; left: 10px; z-index: 1000;
-      background: rgba(0, 20, 0, 0.9); padding: 15px;
-      border: 1px solid #0f0; pointer-events: none;
+      background: rgba(0,0,0,0.85); padding: 15px; border: 1px solid #ff0000;
+      pointer-events: none; box-shadow: 0 0 10px rgba(255,0,0,0.5);
     }
-    .status-ok { color: #0f0; }
-    .status-error { color: #f00; font-weight: bold; }
+    .blink { animation: blinker 1.5s linear infinite; color: #ff0000; font-weight: bold; }
+    @keyframes blinker { 50% { opacity: 0; } }
   </style>
 </head>
 <body>
 
-  <div id="interface">
-    <div>SISTEMA: <span id="status">INICIALIZANDO...</span></div>
+  <div id="radar-ui">
+    <div>SISTEMA: <span id="status">ESPERANDO MOVIMIENTO</span></div>
     <div>PROVINCIA: <span id="prov">-</span></div>
-    <div>HALLAZGOS: <span id="count">0</span></div>
+    <div>PUNTOS CONFIRMADOS: <span id="count">0</span></div>
   </div>
   <div id="map"></div>
 
   <script>
-    // Configuración inicial
     var map = L.map('map').setView([37.38, -5.98], 12);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
     var markersLayer = L.layerGroup().addTo(map);
 
-    // 1. Obtener Provincia por Geocodificación
-    async function getProvincia(lat, lon) {
+    // Diccionario de validación: si no hay nada de esto en la red, se ignora el lugar.
+    const terminosParanormales = ["paranormal", "fantasma", "espíritu", "aparición", "leyenda", "misterio", "maldito", "encantado", "psicofonía", "poltergeist", "diablo", "miedo", "extraño"];
+
+    async function obtenerProvincia(lat, lon) {
       try {
         const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
         const d = await r.json();
-        return d.address.province || d.address.state || "Sevilla";
-      } catch (e) { return "Sevilla"; }
+        return d.address.province || d.address.state || "";
+      } catch (e) { return ""; }
     }
 
-    // 2. Buscar referencias reales en Wikipedia/Web (Simulado por API rápida)
-    async function getPopularidad(nombre, prov) {
-      // Usamos la API de Wikipedia como termómetro de "fama"
-      const url = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(nombre + " " + prov)}&format=json&origin=*`;
+    async function validarParanormal(nombre, provincia) {
+      // Buscamos en Wikipedia si el lugar tiene alguna relación con los términos
+      const url = `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(nombre + " " + provincia)}&format=json&origin=*`;
       try {
         const r = await fetch(url);
         const d = await r.json();
-        return d.query.searchinfo.totalhits; // Devuelve cuántas páginas hablan de esto
-      } catch (e) { return 0; }
+        
+        if (d.query.search.length === 0) return { esValido: false, refs: 0 };
+
+        // Analizamos los fragmentos (snippets) devueltos por la búsqueda
+        let textoAsociado = d.query.search.map(s => s.snippet.toLowerCase()).join(" ");
+        let coincide = terminosParanormales.some(term => textoAsociado.includes(term));
+        
+        return {
+          esValido: coincide,
+          refs: d.query.searchinfo.totalhits
+        };
+      } catch (e) { return { esValido: false, refs: 0 }; }
     }
 
-    async function escanear() {
-      const status = document.getElementById('status');
-      const provEl = document.getElementById('prov');
+    async function ejecutarRadar() {
+      const statusEl = document.getElementById('status');
       const countEl = document.getElementById('count');
+      const provEl = document.getElementById('prov');
 
-      status.innerText = "BUSCANDO...";
-      status.className = "status-ok";
+      statusEl.innerText = "ESCANEO SEMÁNTICO...";
+      statusEl.className = "blink";
 
       const centro = map.getCenter();
-      const provincia = await getProvincia(centro.lat, centro.lng);
+      const provincia = await obtenerProvincia(centro.lat, centro.lng);
       provEl.innerText = provincia;
 
       const b = map.getBounds();
       const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
 
-      // Query optimizada para evitar errores 429/500
+      // Búsqueda de topónimos en OpenStreetMap
       const query = `[out:json][timeout:15];(
-        node["name"~"Cortijo|Hacienda|Monasterio|Fábrica|Cementerio|Torre",i](${bbox});
-        way["name"~"Cortijo|Hacienda|Monasterio|Fábrica|Cementerio|Torre",i](${bbox});
+        node["name"~"Cortijo|Hacienda|Monasterio|Fábrica|Cementerio|Venta|Torre|Iglesia",i](${bbox});
+        way["name"~"Cortijo|Hacienda|Monasterio|Fábrica|Cementerio|Venta|Torre|Iglesia",i](${bbox});
       );out center;`;
 
       try {
         const response = await fetch("https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(query));
-        
-        if (!response.ok) throw new Error();
-        
         const data = await response.json();
+        
         markersLayer.clearLayers();
-        let encontrados = 0;
+        let confirmados = 0;
 
         for (let el of data.elements) {
           const nombre = el.tags.name;
           const lat = el.lat || el.center.lat;
           const lon = el.lon || el.center.lon;
 
-          // COTEJO: Solo si tiene referencias en internet
-          const nRefs = await getPopularidad(nombre, provincia);
+          // VALIDACIÓN ESTRICTA
+          const infoInternet = await validarParanormal(nombre, provincia);
 
-          // FILTRO: Solo lugares con menciones (paranormales o históricas)
-          if (nRefs > 0 || nombre.toLowerCase().includes("diablo") || nombre.toLowerCase().includes("misterio")) {
-            encontrados++;
+          if (infoInternet.esValido) {
+            confirmados++;
             L.circleMarker([lat, lon], {
-              radius: 10,
-              fillColor: "#f00",
+              radius: 12,
+              fillColor: "#ff0000",
               color: "#fff",
               weight: 2,
-              fillOpacity: 0.8
+              fillOpacity: 0.9
             }).addTo(markersLayer)
               .bindPopup(`
-                <div style="color:#000">
-                  <b>${nombre}</b><br>
-                  <i>Provincia: ${provincia}</i><hr>
-                  Referencias: <b>${nRefs}</b><br><br>
-                  <a href="https://www.google.com/search?q=${encodeURIComponent(nombre + ' ' + provincia + ' paranormal')}" target="_blank">Investigar</a>
+                <div style="color:#000; font-family:sans-serif;">
+                  <h3 style="margin:0">${nombre}</h3>
+                  <p style="color:red; font-weight:bold;">CONFIRMADO PARANORMAL</p>
+                  <hr>
+                  Referencias encontradas: ${infoInternet.refs}<br><br>
+                  <a href="https://www.google.com/search?q=${encodeURIComponent(nombre + ' ' + provincia + ' paranormal')}" target="_blank">VER EXPEDIENTES</a>
                 </div>
               `);
           }
         }
-        countEl.innerText = encontrados;
-        status.innerText = "RADAR ACTIVO";
+        countEl.innerText = confirmados;
+        statusEl.innerText = "RADAR EN ESPERA";
+        statusEl.className = "";
       } catch (err) {
-        status.innerText = "ERROR DE CONEXIÓN (REINTENTANDO...)";
-        status.className = "status-error";
-        setTimeout(escanear, 5000); // Reintento automático
+        statusEl.innerText = "ERROR - REINTENTANDO";
+        setTimeout(ejecutarRadar, 3000);
       }
     }
 
-    // Evitar saturación: solo busca cuando el mapa se deja de mover
-    let t;
+    let debounce;
     map.on('moveend', () => {
-      clearTimeout(t);
-      t = setTimeout(escanear, 1500);
+      clearTimeout(debounce);
+      debounce = setTimeout(ejecutarRadar, 1200);
     });
 
-    escanear();
+    ejecutarRadar();
   </script>
 </body>
 </html>
