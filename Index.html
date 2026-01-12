@@ -100,7 +100,6 @@
       opacity: 0.9;
     }
 
-    /* Ajustes específicos para móvil */
     @media (max-width: 600px) {
       .header {
         padding: 12px 16px;
@@ -149,6 +148,12 @@
       .leaflet-control-layers-toggle {
         width: 40px;
         height: 40px;
+      }
+
+      /* Bajar el control de capas en móvil para que no choque con el banner */
+      .leaflet-top.leaflet-right {
+        top: auto;
+        bottom: 70px;
       }
     }
 
@@ -268,8 +273,17 @@
       "Ortofoto": ortofoto
     };
 
-    // Control de capas (esquina superior derecha)
+    // Control de capas (esquina sup. derecha en escritorio, bajado en móvil por CSS)
     L.control.layers(baseLayers, null, { collapsed: true }).addTo(map);
+
+    // Icono paranormal personalizado (coloca marker-paranormal.png junto a Index.html)
+    const paranormalIcon = L.icon({
+      iconUrl: 'marker-paranormal.png',
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -36],
+      shadowUrl: null
+    });
 
     function crearPopup(h) {
       const lat = h.lat;
@@ -295,7 +309,7 @@
       .then(data => {
         data.forEach(h => {
           if (typeof h.lat === 'number' && typeof h.lng === 'number') {
-            L.marker([h.lat, h.lng])
+            L.marker([h.lat, h.lng], { icon: paranormalIcon })
               .addTo(map)
               .bindPopup(crearPopup(h));
           }
