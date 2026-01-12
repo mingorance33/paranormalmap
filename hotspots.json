@@ -1,27 +1,14 @@
 [
-  { "n": "Monasterio del Diablo (San Antón)", "p": "Sevilla", "t": "Monasterio", "lat": 37.4042, "lng": -5.7369, "ref": "15.000+" },
-  { "n": "Hospital de las Cinco Llagas", "p": "Sevilla", "t": "Edificio", "lat": 37.4003, "lng": -5.9872, "ref": "8.500" },
-  { "n": "Fábrica de Sombreros", "p": "Sevilla", "t": "Fábrica", "lat": 37.3941, "lng": -5.9836, "ref": "3.200" },
-  { "n": "Hacienda de la Motilla", "p": "Sevilla", "t": "Hacienda", "lat": 37.2891, "lng": -5.9423, "ref": "1.800" },
-  { "n": "Cortijo Jurado", "p": "Málaga", "t": "Cortijo", "lat": 36.7261, "lng": -4.5514, "ref": "45.000+" },
-  { "n": "Cortijo Colmenares", "p": "Málaga", "t": "Cortijo", "lat": 36.6908, "lng": -4.4822, "ref": "2.100" },
-  { "n": "Cementerio Inglés de Málaga", "p": "Málaga", "t": "Cementerio", "lat": 36.7208, "lng": -4.4072, "ref": "5.600" },
-  { "n": "Sanatorio de las Alfaguara", "p": "Granada", "t": "Hospital", "lat": 37.2431, "lng": -3.5114, "ref": "12.000" },
-  { "n": "Diputación de Granada", "p": "Granada", "t": "Edificio", "lat": 37.1758, "lng": -3.6006, "ref": "10.500" },
-  { "n": "Real Chancillería", "p": "Granada", "t": "Edificio", "lat": 37.1769, "lng": -3.5956, "ref": "4.300" },
-  { "n": "Cortijo del Fraile", "p": "Almería", "t": "Cortijo", "lat": 36.8533, "lng": -2.1158, "ref": "7.200" },
-  { "n": "Palacio del Almanzora", "p": "Almería", "t": "Palacio", "lat": 37.3508, "lng": -2.1281, "ref": "1.500" },
-  { "n": "Cortijo de San José", "p": "Almería", "t": "Cortijo", "lat": 36.7644, "lng": -2.1936, "ref": "800" },
-  { "n": "Hospital de Mora", "p": "Cádiz", "t": "Hospital", "lat": 36.5361, "lng": -6.3044, "ref": "7.000" },
-  { "n": "Casa de los Espejos", "p": "Cádiz", "t": "Casa", "lat": 36.5358, "lng": -6.2922, "ref": "5.100" },
-  { "n": "Venta de la Inés", "p": "Cádiz", "t": "Venta", "lat": 36.5653, "lng": -5.9231, "ref": "1.200" },
-  { "n": "Facultad de Derecho", "p": "Córdoba", "t": "Edificio", "lat": 37.8864, "lng": -4.7701, "ref": "6.000" },
-  { "n": "Palacio de los Páez de Castillejo", "p": "Córdoba", "t": "Palacio", "lat": 37.8825, "lng": -4.7769, "ref": "1.800" },
-  { "n": "Cementerio de la Salud", "p": "Córdoba", "t": "Cementerio", "lat": 37.8833, "lng": -4.7967, "ref": "2.400" },
-  { "n": "Castillo de Santa Catalina", "p": "Jaén", "t": "Castillo", "lat": 37.7681, "lng": -3.8014, "ref": "5.400" },
-  { "n": "Catedral de Jaén", "p": "Jaén", "t": "Iglesia", "lat": 37.7647, "lng": -3.7903, "ref": "4.000" },
-  { "n": "Antiguo Hospital de San Juan de Dios", "p": "Jaén", "t": "Hospital", "lat": 37.7694, "lng": -3.7944, "ref": "2.100" },
-  { "n": "Isla de Saltés", "p": "Huelva", "t": "Paraje", "lat": 37.1833, "lng": -6.9167, "ref": "1.200" },
-  { "n": "Sanatorio de la Cinta", "p": "Huelva", "t": "Hospital", "lat": 37.2872, "lng": -6.9389, "ref": "3.300" },
-  { "n": "Casa Colón", "p": "Huelva", "t": "Edificio", "lat": 37.2558, "lng": -6.9472, "ref": "1.500" }
+  {
+    "name": "Monasterio del Diablo",
+    "lat": 37.45076691835187,
+    "lng": -5.66970179443718,
+    "description": "De este edificio se cuentan historias relacionadas con el demonio y quienes se han atrevido a entrar aseguran haber escuchado voces y haber visto figuras y luces extrañas."
+  },
+  {
+    "name": "La Casa de la Loca",
+    "lat": 37.31996625963536,
+    "lng": -6.043654920446369,
+    "description": "Cerca de Sevilla capital, en el municipio de Palomares del río, hay un cortijo en ruinas conocido como la casa de la loca.  Entre sus desvencijados muros se oculta una trágica historia. Muertes, romances truncados y asesinatos.  Esta siniestra leyenda impregna las piedras que quedan como testimonio.  El supuesto fantasma de la casa tiene un nombre: Gabriela Ciaurriz. ¿Quieres conocer su historia?"
+  }
 ]
