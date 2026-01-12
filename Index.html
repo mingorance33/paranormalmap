@@ -29,7 +29,7 @@
 
     #map { width: 100%; height: 100vh; z-index: 1; }
 
-    /* Cabecera Enlace a YouTube */
+    /* Cabecera Enlace al Canal */
     .header {
       position: fixed;
       top: 10px;
@@ -56,7 +56,6 @@
       background: rgba(20, 20, 20, 0.98);
       border-color: var(--color-rojo);
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(177, 0, 24, 0.4);
     }
 
     .header-logo {
@@ -97,7 +96,7 @@
       .leaflet-top.leaflet-right { top: 10px !important; right: 10px !important; }
     }
 
-    /* Popups Estilo Paranormal */
+    /* Popups */
     .leaflet-popup-content-wrapper {
       background: rgba(0, 0, 0, 0.95);
       color: var(--color-texto);
@@ -129,7 +128,6 @@
       font-size: 11px;
       border-radius: 4px;
       text-transform: uppercase;
-      transition: background 0.2s;
     }
 
     .btn-maps { background: #333; color: white; border: 1px solid #444; }
@@ -140,13 +138,13 @@
 </head>
 <body>
 
-  <a href="https://www.youtube.com/@AgustinBolaMortimer" target="_blank" class="header" title="Visitar canal de YouTube">
+  <a href="https://www.youtube.com/@AgustinBolaMortimer" target="_blank" class="header">
     <div class="header-logo">
       <img src="terrifie.jpg" alt="Logo">
     </div>
     <div class="header-text">
       <div class="header-title">Agustín Bola Mórtimer</div>
-      <div class="header-subtitle">Ver investigaciones en YouTube</div>
+      <div class="header-subtitle">Investigaciones Paranormales</div>
     </div>
   </a>
 
@@ -157,22 +155,14 @@
   <script>
     const map = L.map('map').setView([40.0, -3.7], 6);
 
-    // Capas Base
     const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 });
     const ortofoto = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19 });
     const etiquetas = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', { pane: 'markerPane', maxZoom: 19 });
 
     const hibrido = L.layerGroup([ortofoto, etiquetas]);
-
     osm.addTo(map);
 
-    const baseLayers = {
-      "Mapa": osm,
-      "Satélite": ortofoto,
-      "Híbrido": hibrido
-    };
-
-    L.control.layers(baseLayers, null, { collapsed: true }).addTo(map);
+    L.control.layers({"Mapa": osm, "Satélite": ortofoto, "Híbrido": hibrido}, null, { collapsed: true }).addTo(map);
 
     const paranormalIcon = L.icon({
       iconUrl: 'marker-paranormal.png',
@@ -182,16 +172,20 @@
     });
 
     function crearPopup(h) {
-      const youtubeUrl = "https://www.youtube.com/@AgustinBolaMortimer";
-      // Formato oficial de Google Maps para navegación
       const gMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lng}`;
       
+      // Lógica Condicional: Solo crea el botón de YouTube si hay un enlace en el JSON
+      let botonYoutube = "";
+      if (h.video && h.video.trim() !== "") {
+        botonYoutube = `<a href="${h.video}" target="_blank" class="btn-popup btn-youtube">🎥 Ver Investigación</a>`;
+      }
+
       return `
         <div class="popup-title">${h.name || 'Lugar Marcado'}</div>
         <div style="font-size: 13px; opacity: 0.9; margin-bottom: 10px;">${h.description || ''}</div>
         <div class="popup-buttons">
           <a href="${gMapsUrl}" target="_blank" class="btn-popup btn-maps">📍 Cómo llegar</a>
-          <a href="${youtubeUrl}" target="_blank" class="btn-popup btn-youtube">🎥 Ver Investigación</a>
+          ${botonYoutube}
         </div>
       `;
     }
@@ -207,7 +201,7 @@
           }
         });
       })
-      .catch(err => console.error('Error cargando datos:', err));
+      .catch(err => console.error('Error:', err));
   </script>
 </body>
 </html>
