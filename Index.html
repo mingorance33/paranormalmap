@@ -4,8 +4,7 @@
   <meta charset="UTF-8" />
   <title>Hotspots Paranormales | Agustín Bola Mórtimer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <style>
     :root {
@@ -18,190 +17,100 @@
     }
 
     * { box-sizing: border-box; }
-
-    html, body {
-      margin: 0; padding: 0; height: 100%;
-      background: var(--color-fondo);
-      color: var(--color-texto);
-      font-family: system-ui, -apple-system, sans-serif;
-      overflow: hidden;
-    }
-
+    html, body { margin: 0; padding: 0; height: 100%; background: var(--color-fondo); color: var(--color-texto); font-family: sans-serif; overflow: hidden; }
     #map { width: 100%; height: 100vh; z-index: 1; }
 
-    /* Cabecera Enlace al Canal */
+    /* Cabecera con doble zona de clic */
     .header {
-      position: fixed;
-      top: 10px;
-      left: 54px; 
-      width: auto;
-      max-width: calc(100% - 120px);
-      padding: 8px 14px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      z-index: 1000;
-      background: var(--color-panel);
-      backdrop-filter: blur(8px);
-      border-radius: 8px;
-      border: 1px solid var(--color-borde);
+      position: fixed; top: 10px; left: 54px; 
+      display: flex; align-items: center; gap: 10px; z-index: 1000;
+      background: var(--color-panel); backdrop-filter: blur(8px);
+      border-radius: 8px; border: 1px solid var(--color-borde);
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-      text-decoration: none;
-      color: inherit;
-      transition: all 0.3s ease;
-      cursor: pointer;
+      padding-right: 12px;
     }
 
-    .header:hover {
-      background: rgba(20, 20, 20, 0.98);
-      border-color: var(--color-rojo);
-      transform: translateY(-2px);
+    /* Zona YouTube */
+    .header-main-link {
+      display: flex; align-items: center; gap: 12px;
+      padding: 8px 14px; text-decoration: none; color: inherit;
+      border-right: 1px solid var(--color-borde);
     }
+    .header-main-link:hover { background: rgba(255,255,255,0.05); }
 
-    .header-logo {
-      width: 42px; height: 42px;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 1px solid var(--color-rojo);
-      flex-shrink: 0;
-    }
-
+    .header-logo { width: 42px; height: 42px; border-radius: 50%; overflow: hidden; border: 1px solid var(--color-rojo); flex-shrink: 0; }
     .header-logo img { width: 100%; height: 100%; object-fit: cover; }
+    .header-title { font-size: 0.9rem; font-weight: bold; text-transform: uppercase; color: var(--color-rojo); }
+    .header-subtitle { font-size: 0.7rem; opacity: 0.9; }
 
-    .header-text { display: flex; flex-direction: column; line-height: 1.2; }
-
-    .header-title {
-      font-size: 0.9rem;
-      font-weight: bold;
-      text-transform: uppercase;
-      color: var(--color-rojo);
+    /* Zona Contacto */
+    .btn-contact {
+      text-decoration: none; font-size: 1.1rem; color: var(--color-texto);
+      padding: 5px; transition: transform 0.2s;
     }
+    .btn-contact:hover { transform: scale(1.2); color: var(--color-rojo); }
 
-    .header-subtitle {
-      font-size: 0.7rem;
-      opacity: 0.9;
-      color: #ccc;
-    }
-
-    /* Estilos del Control de Capas */
-    .leaflet-control-layers {
-      background: var(--color-panel) !important;
-      border: 1px solid var(--color-borde) !important;
-      color: var(--color-texto) !important;
-    }
-
+    /* Estilos Leaflet */
+    .leaflet-control-layers { background: var(--color-panel) !important; border: 1px solid var(--color-borde) !important; color: var(--color-texto) !important; }
     @media (max-width: 600px) {
-      .header { left: 50px; padding: 6px 10px; }
+      .header { left: 50px; }
       .header-subtitle { display: none; }
       .leaflet-top.leaflet-right { top: 10px !important; right: 10px !important; }
     }
 
     /* Popups */
-    .leaflet-popup-content-wrapper {
-      background: rgba(0, 0, 0, 0.95);
-      color: var(--color-texto);
-      border: 1px solid var(--color-borde);
-      border-radius: 4px;
-    }
-
-    .popup-title { 
-      font-weight: bold; 
-      color: var(--color-rojo); 
-      text-transform: uppercase; 
-      margin-bottom: 5px;
-      font-size: 1rem;
-    }
-
-    .popup-buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .btn-popup {
-      display: block;
-      text-align: center;
-      padding: 8px;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 11px;
-      border-radius: 4px;
-      text-transform: uppercase;
-    }
-
+    .leaflet-popup-content-wrapper { background: rgba(0, 0, 0, 0.95); color: var(--color-texto); border: 1px solid var(--color-borde); }
+    .popup-title { font-weight: bold; color: var(--color-rojo); text-transform: uppercase; margin-bottom: 5px; }
+    .popup-buttons { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+    .btn-popup { display: block; text-align: center; padding: 8px; text-decoration: none; font-weight: bold; font-size: 11px; border-radius: 4px; text-transform: uppercase; }
     .btn-maps { background: #333; color: white; border: 1px solid #444; }
     .btn-youtube { background: var(--color-youtube); color: white; }
-    .btn-popup:hover { filter: brightness(1.2); }
-
   </style>
 </head>
 <body>
 
-  <a href="https://www.youtube.com/@AgustinBolaMortimer" target="_blank" class="header">
-    <div class="header-logo">
-      <img src="terrifie.jpg" alt="Logo">
-    </div>
-    <div class="header-text">
-      <div class="header-title">Agustín Bola Mórtimer</div>
-      <div class="header-subtitle">Investigaciones Paranormales</div>
-    </div>
-  </a>
+  <div class="header">
+    <a href="https://www.youtube.com/@AgustinBolaMortimer" target="_blank" class="header-main-link">
+      <div class="header-logo"><img src="terrifie.jpg" alt="Logo"></div>
+      <div class="header-text">
+        <div class="header-title">Agustín Bola Mórtimer</div>
+        <div class="header-subtitle">Investigaciones Paranormales</div>
+      </div>
+    </a>
+    <a href="mailto:tu-correo@gmail.com?subject=Sugerencia Mapa" class="btn-contact" title="Contactar">✉️</a>
+  </div>
 
   <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
   <script>
     const map = L.map('map').setView([40.0, -3.7], 6);
-
-    const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 });
+    const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
     const ortofoto = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19 });
     const etiquetas = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', { pane: 'markerPane', maxZoom: 19 });
-
     const hibrido = L.layerGroup([ortofoto, etiquetas]);
-    osm.addTo(map);
 
     L.control.layers({"Mapa": osm, "Satélite": ortofoto, "Híbrido": hibrido}, null, { collapsed: true }).addTo(map);
 
-    const paranormalIcon = L.icon({
-      iconUrl: 'marker-paranormal.png',
-      iconSize: [40, 40],
-      iconAnchor: [20, 40],
-      popupAnchor: [0, -36]
-    });
+    const paranormalIcon = L.icon({ iconUrl: 'marker-paranormal.png', iconSize: [40, 40], iconAnchor: [20, 40], popupAnchor: [0, -36] });
 
     function crearPopup(h) {
       const gMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lng}`;
-      
-      // Lógica Condicional: Solo crea el botón de YouTube si hay un enlace en el JSON
-      let botonYoutube = "";
-      if (h.video && h.video.trim() !== "") {
-        botonYoutube = `<a href="${h.video}" target="_blank" class="btn-popup btn-youtube">🎥 Ver Investigación</a>`;
-      }
-
+      let botonYoutube = h.video ? `<a href="${h.video}" target="_blank" class="btn-popup btn-youtube">🎥 Ver Investigación</a>` : "";
       return `
-        <div class="popup-title">${h.name || 'Lugar Marcado'}</div>
-        <div style="font-size: 13px; opacity: 0.9; margin-bottom: 10px;">${h.description || ''}</div>
+        <div class="popup-title">${h.name}</div>
+        <div style="font-size: 13px; opacity: 0.9;">${h.description}</div>
         <div class="popup-buttons">
           <a href="${gMapsUrl}" target="_blank" class="btn-popup btn-maps">📍 Cómo llegar</a>
           ${botonYoutube}
-        </div>
-      `;
+        </div>`;
     }
 
-    fetch('hotspots.json')
-      .then(r => r.json())
-      .then(data => {
-        data.forEach(h => {
-          if (h.lat && h.lng) {
-            L.marker([h.lat, h.lng], { icon: paranormalIcon })
-              .addTo(map)
-              .bindPopup(crearPopup(h));
-          }
-        });
-      })
-      .catch(err => console.error('Error:', err));
+    fetch('hotspots.json').then(r => r.json()).then(data => {
+      data.forEach(h => {
+        if (h.lat && h.lng) L.marker([h.lat, h.lng], { icon: paranormalIcon }).addTo(map).bindPopup(crearPopup(h));
+      });
+    }).catch(e => console.error("Error cargando puntos:", e));
   </script>
 </body>
 </html>
