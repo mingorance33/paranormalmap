@@ -20,43 +20,55 @@
     html, body { margin: 0; padding: 0; height: 100%; background: var(--color-fondo); color: var(--color-texto); font-family: sans-serif; overflow: hidden; }
     #map { width: 100%; height: 100vh; z-index: 1; }
 
-    /* Cabecera optimizada con doble zona de clic */
+    /* Cabecera */
     .header {
-      position: fixed; top: 10px; left: 54px; 
+      position: fixed; top: 10px; left: 10px; 
       display: flex; align-items: center; z-index: 1000;
       background: var(--color-panel); backdrop-filter: blur(8px);
       border-radius: 8px; border: 1px solid var(--color-borde);
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+      max-width: calc(100% - 20px);
     }
 
-    /* Enlace a YouTube (Logo + Nombre) */
+    /* Enlace a YouTube */
     .header-main-link {
-      display: flex; align-items: center; gap: 12px;
-      padding: 8px 14px; text-decoration: none; color: inherit;
+      display: flex; align-items: center; gap: 10px;
+      padding: 6px 12px; text-decoration: none; color: inherit;
       border-right: 1px solid var(--color-borde);
     }
     .header-main-link:hover { background: rgba(255,255,255,0.05); }
 
-    .header-logo { width: 42px; height: 42px; border-radius: 50%; overflow: hidden; border: 1px solid var(--color-rojo); flex-shrink: 0; }
+    .header-logo { width: 38px; height: 38px; border-radius: 50%; overflow: hidden; border: 1px solid var(--color-rojo); flex-shrink: 0; }
     .header-logo img { width: 100%; height: 100%; object-fit: cover; }
-    .header-title { font-size: 0.9rem; font-weight: bold; text-transform: uppercase; color: var(--color-rojo); }
-    .header-subtitle { font-size: 0.7rem; opacity: 0.9; }
+    .header-title { font-size: 0.85rem; font-weight: bold; text-transform: uppercase; color: var(--color-rojo); }
+    .header-subtitle { font-size: 0.65rem; opacity: 0.9; }
 
-    /* Botón de Contacto (Email) */
+    /* Botón de Contacto */
     .btn-contact {
-      display: flex; align-items: center; gap: 8px;
-      padding: 0 15px; text-decoration: none; color: var(--color-texto);
+      display: flex; align-items: center; gap: 6px;
+      padding: 0 12px; text-decoration: none; color: var(--color-texto);
       transition: all 0.3s ease;
     }
-    .contact-text { font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
-    .btn-contact:hover { color: var(--color-rojo); transform: scale(1.05); }
+    .contact-text { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+    .btn-contact:hover { color: var(--color-rojo); }
 
-    /* Ajustes para móviles */
+    /* ESTILOS ESPECÍFICOS PARA MÓVIL */
     @media (max-width: 600px) {
-      .header { left: 50px; }
-      .header-subtitle, .contact-text { display: none; } /* Oculta textos largos en móvil */
-      .btn-contact { padding: 0 12px; font-size: 1.2rem; }
-      .leaflet-top.leaflet-right { top: 10px !important; right: 10px !important; }
+      .header-subtitle, .contact-text { display: none; }
+      .header-main-link { padding: 6px 10px; }
+      
+      /* Mover selector de capas abajo a la derecha en móviles */
+      .leaflet-top.leaflet-right {
+        top: auto !important;
+        bottom: 20px !important;
+        right: 10px !important;
+      }
+      
+      /* Hacer el botón del selector un poco más grande para dedos */
+      .leaflet-control-layers-toggle {
+        width: 44px !important;
+        height: 44px !important;
+      }
     }
 
     /* Estilos del Mapa y Popups */
@@ -88,14 +100,20 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    const map = L.map('map').setView([40.0, -3.7], 6);
+    const map = L.map('map', {
+        zoomControl: false // Opcional: quitamos botones +/- para limpiar más la pantalla
+    }).setView([40.0, -3.7], 6);
 
-    // Capas
+    // Volvemos a añadir el zoom abajo a la izquierda para que no estorbe
+    L.control.zoom({ position: 'bottomleft' }).addTo(map);
+
     const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
     const ortofoto = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19 });
     const etiquetas = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', { pane: 'markerPane', maxZoom: 19 });
     const hibrido = L.layerGroup([ortofoto, etiquetas]);
 
+    // El selector de capas se posiciona en 'topright' por defecto, 
+    // pero nuestro CSS lo moverá abajo en móviles.
     L.control.layers({"Mapa": osm, "Satélite": ortofoto, "Híbrido": hibrido}, null, { collapsed: true }).addTo(map);
 
     const paranormalIcon = L.icon({ iconUrl: 'marker-paranormal.png', iconSize: [40, 40], iconAnchor: [20, 40], popupAnchor: [0, -36] });
