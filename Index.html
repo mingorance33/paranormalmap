@@ -37,14 +37,13 @@
       padding: 8px 14px; border-radius: 8px; border: 1px solid var(--color-borde);
       text-decoration: none; color: inherit; transition: 0.2s;
     }
-    .header:hover { border-color: var(--color-rojo); transform: translateY(-2px); }
     .header-logo { width: 42px; height: 42px; border-radius: 50%; overflow: hidden; border: 1px solid var(--color-rojo); }
     .header-logo img { width: 100%; height: 100%; object-fit: cover; }
     .header-text { margin-left: 12px; }
     .header-title { font-size: 0.9rem; font-weight: bold; text-transform: uppercase; color: var(--color-rojo); }
     .header-subtitle { font-size: 0.7rem; opacity: 0.9; }
 
-    /* Buscador junto al Zoom (Arriba Izquierda) */
+    /* Buscador junto al Zoom */
     .leaflet-control-search {
         background: var(--color-panel); border: 2px solid rgba(255,255,255,0.2);
         border-radius: 4px; display: flex; flex-direction: column;
@@ -52,31 +51,15 @@
     .search-wrapper { display: flex; align-items: center; padding: 2px; }
     #search-input {
         width: 0; height: 30px; border: none; background: transparent; color: white;
-        padding: 0; transition: width 0.3s, padding 0.3s; outline: none;
+        padding: 0; transition: width 0.3s; outline: none;
     }
     .leaflet-control-search:hover #search-input { width: 180px; padding: 0 10px; }
-    .search-icon-btn { width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; color: var(--color-rojo); font-size: 1rem; }
+    .search-icon-btn { width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; color: var(--color-rojo); }
     #search-results { background: var(--color-panel); max-height: 200px; overflow-y: auto; width: 210px; display: none; border-top: 1px solid var(--color-borde); }
     .search-item { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid var(--color-borde); font-size: 0.85rem; }
     .search-item:hover { background: rgba(177, 0, 24, 0.3); }
 
-    /* Radar de Proximidad (Abajo Derecha) */
-    .radar-container {
-        position: fixed; bottom: 20px; right: 20px; z-index: 1000;
-        display: flex; flex-direction: column-reverse; align-items: flex-end; gap: 10px;
-    }
-    #btn-radar {
-        width: 50px; height: 50px; border-radius: 50%; background: var(--color-panel);
-        border: 2px solid var(--color-rojo); color: white; font-size: 1.4rem; cursor: pointer;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.5); backdrop-filter: blur(8px);
-    }
-    #radar-controls {
-        background: var(--color-panel); padding: 15px; border-radius: 12px;
-        border: 1px solid var(--color-borde); width: 180px; color: white; backdrop-filter: blur(8px);
-    }
-    #radar-range { width: 100%; accent-color: var(--color-rojo); margin-top: 8px; }
-
-    /* Contacto (Abajo Izquierda) */
+    /* Contacto Abajo Izquierda */
     .contact-footer {
       position: fixed; bottom: 20px; left: 20px; z-index: 1000;
       display: flex; align-items: center; background: var(--color-panel);
@@ -84,21 +67,16 @@
       text-decoration: none; color: var(--color-texto); backdrop-filter: blur(8px);
     }
 
-    /* Clusters e Iconos */
-    .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background-color: rgba(177, 0, 24, 0.4) !important; }
-    .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div { background-color: rgba(177, 0, 24, 0.8) !important; color: white !important; }
+    /* Estilos Mapa y Clusters */
     .leaflet-tooltip { background: var(--color-panel) !important; color: white !important; border: 1px solid var(--color-rojo) !important; }
-
-    /* Popups */
+    .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div { background-color: rgba(177, 0, 24, 0.8) !important; color: white !important; }
     .leaflet-popup-content-wrapper { background: rgba(0, 0, 0, 0.95); color: var(--color-texto); border: 1px solid var(--color-borde); }
-    .popup-title { font-weight: bold; color: var(--color-rojo); text-transform: uppercase; }
     .btn-popup { display: block; text-align: center; padding: 8px; text-decoration: none; font-weight: bold; font-size: 11px; border-radius: 4px; margin-top: 10px; }
     .btn-maps { background: #333; color: white; }
     .btn-youtube { background: var(--color-youtube); color: white; }
 
     @media (max-width: 600px) {
       .header-subtitle, .contact-label { display: none; }
-      .contact-footer { padding: 10px; border-radius: 50%; }
       .header { left: 50px; }
     }
   </style>
@@ -113,14 +91,6 @@
     </div>
   </a>
 
-  <div class="radar-container">
-      <button id="btn-radar" title="Activar Radar Localizador">🛰️</button>
-      <div id="radar-controls" style="display: none;">
-          <label style="font-size: 0.8rem;">Radio: <span id="range-value">5</span> km</label>
-          <input type="range" id="radar-range" min="1" max="50" value="5">
-      </div>
-  </div>
-
   <a href="mailto:tu-correo@ejemplo.com" class="contact-footer">
     <span style="color:var(--color-rojo); margin-right: 8px;">✉</span>
     <span class="contact-label">Si quieres contactar pincha aquí</span>
@@ -134,18 +104,11 @@
   <script>
     const map = L.map('map').setView([37.3, -5.9], 10);
     let allData = [];
-    let userCircle = null;
-    let userLocation = null;
 
-    // Capas de Mapa
-    const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
-    const hibrido = L.layerGroup([
-      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'),
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png')
-    ]);
-    L.control.layers({"Mapa": osm, "Satélite": hibrido}, null, { collapsed: true }).addTo(map);
+    // Capas
+    const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-    // Control Buscador
+    // Buscador junto al zoom
     const SearchControl = L.Control.extend({
         options: { position: 'topleft' },
         onAdd: function() {
@@ -163,23 +126,22 @@
     });
     map.addControl(new SearchControl());
 
-    // Configuración de Marcadores
     const markers = L.markerClusterGroup();
     const paranormalIcon = L.icon({ 
-      iconUrl: 'marker-paranormal.png', 
-      iconSize: [20, 20], 
-      iconAnchor: [10, 20], 
-      popupAnchor: [0, -20] 
+        iconUrl: 'marker-paranormal.png', 
+        iconSize: [20, 20], 
+        iconAnchor: [10, 20], 
+        popupAnchor: [0, -20] 
     });
 
     function crearPopup(h) {
       const gMapsUrl = `https://www.google.com/maps?q=${h.lat},${h.lng}`;
       let btnYT = (h.video) ? `<a href="${h.video}" target="_blank" class="btn-popup btn-youtube">🎥 Ver Investigación</a>` : "";
-      return `<div class="popup-title">${h.name}</div><div style="font-size:12px; margin-top:5px;">${h.description}</div>
+      return `<b style="color:var(--color-rojo)">${h.name}</b><p style="font-size:12px">${h.description}</p>
               <a href="${gMapsUrl}" target="_blank" class="btn-popup btn-maps">📍 Cómo llegar</a>${btnYT}`;
     }
 
-    // Cargar JSON
+    // Cargar Datos
     fetch('hotspots.json').then(r => r.json()).then(data => {
       allData = data;
       data.forEach(h => {
@@ -193,13 +155,14 @@
       map.addLayer(markers);
     });
 
-    // Lógica del Buscador
+    // Lógica del buscador
     document.addEventListener('input', (e) => {
         if (e.target.id !== 'search-input') return;
         const val = e.target.value.toLowerCase();
         const resDiv = document.getElementById('search-results');
         resDiv.innerHTML = '';
         if (val.length < 2) { resDiv.style.display = 'none'; return; }
+
         const filtered = allData.filter(h => h.name.toLowerCase().includes(val) || h.description.toLowerCase().includes(val));
         if (filtered.length > 0) {
             resDiv.style.display = 'block';
@@ -207,50 +170,14 @@
                 const item = document.createElement('div');
                 item.className = 'search-item';
                 item.innerHTML = h.name;
-                item.onclick = () => { map.flyTo([h.lat, h.lng], 16); resDiv.style.display = 'none'; };
+                item.onclick = () => { 
+                    map.flyTo([h.lat, h.lng], 16); 
+                    resDiv.style.display = 'none'; 
+                };
                 resDiv.appendChild(item);
             });
         } else { resDiv.style.display = 'none'; }
     });
-
-    // Lógica del Radar
-    const btnRadar = document.getElementById('btn-radar');
-    const radarControls = document.getElementById('radar-controls');
-    const radarRange = document.getElementById('radar-range');
-    const rangeValue = document.getElementById('range-value');
-
-    btnRadar.onclick = () => {
-        if (radarControls.style.display === 'none') {
-            map.locate({setView: true, maxZoom: 13});
-        } else {
-            radarControls.style.display = 'none';
-            if (userCircle) map.removeLayer(userCircle);
-        }
-    };
-
-    map.on('locationfound', (e) => {
-        userLocation = e.latlng;
-        radarControls.style.display = 'block';
-        actualizarRadar();
-    });
-
-    radarRange.oninput = (e) => {
-        rangeValue.innerText = e.target.value;
-        actualizarRadar();
-    };
-
-    function actualizarRadar() {
-        if (!userLocation) return;
-        const radioMetros = radarRange.value * 1000;
-        if (userCircle) map.removeLayer(userCircle);
-        userCircle = L.circle(userLocation, {
-            radius: radioMetros,
-            color: 'var(--color-rojo)',
-            fillColor: 'var(--color-rojo)',
-            fillOpacity: 0.15,
-            weight: 1
-        }).addTo(map);
-    }
   </script>
 </body>
 </html>
