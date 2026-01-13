@@ -4,7 +4,10 @@
   <meta charset="UTF-8" />
   <title>Hotspots Paranormales | Agustín Bola Mórtimer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
 
   <style>
     :root {
@@ -25,56 +28,46 @@
       position: fixed; top: 10px; left: 54px; 
       display: flex; align-items: center; z-index: 1000;
       background: var(--color-panel); backdrop-filter: blur(8px);
-      border-radius: 8px; border: 1px solid var(--color-borde);
+      padding: 8px 14px; border-radius: 8px; border: 1px solid var(--color-borde);
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-      text-decoration: none; color: inherit;
-      padding: 8px 14px;
-      transition: transform 0.2s, border-color 0.2s;
+      text-decoration: none; color: inherit; transition: 0.2s;
     }
-
-    .header:hover {
-      border-color: var(--color-rojo);
-      transform: translateY(-2px);
-    }
-
+    .header:hover { border-color: var(--color-rojo); transform: translateY(-2px); }
     .header-logo { width: 42px; height: 42px; border-radius: 50%; overflow: hidden; border: 1px solid var(--color-rojo); flex-shrink: 0; }
     .header-logo img { width: 100%; height: 100%; object-fit: cover; }
     .header-text { margin-left: 12px; }
     .header-title { font-size: 0.9rem; font-weight: bold; text-transform: uppercase; color: var(--color-rojo); }
     .header-subtitle { font-size: 0.7rem; opacity: 0.9; }
 
-    /* --- NUEVO: Botón de Contacto Inferior --- */
+    /* Botón de Contacto Inferior */
     .contact-footer {
-      position: fixed; bottom: 20px; left: 20px;
-      z-index: 1000;
+      position: fixed; bottom: 20px; left: 20px; z-index: 1000;
       display: flex; align-items: center;
       background: var(--color-panel); backdrop-filter: blur(8px);
-      padding: 10px 16px;
-      border-radius: 30px;
-      border: 1px solid var(--color-borde);
+      padding: 10px 16px; border-radius: 30px; border: 1px solid var(--color-borde);
       text-decoration: none; color: var(--color-texto);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6); transition: all 0.3s ease;
     }
-
-    .contact-footer:hover {
-      border-color: var(--color-rojo);
-      transform: scale(1.05);
-    }
-
+    .contact-footer:hover { border-color: var(--color-rojo); transform: scale(1.05); }
     .contact-icon { font-size: 1.2rem; margin-right: 10px; color: var(--color-rojo); }
-    .contact-label { font-size: 0.8rem; font-weight: bold; letter-spacing: 0.5px; }
+    .contact-label { font-size: 0.8rem; font-weight: bold; }
 
-    /* Estilos Leaflet */
-    .leaflet-control-layers { background: var(--color-panel) !important; border: 1px solid var(--color-borde) !important; color: var(--color-texto) !important; }
-    .leaflet-bar a { background-color: var(--color-panel) !important; color: white !important; border-bottom: 1px solid var(--color-borde) !important; }
+    /* Estilos de los Clusters (Círculos de agrupación) */
+    .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large {
+        background-color: rgba(177, 0, 24, 0.4) !important;
+    }
+    .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div {
+        background-color: rgba(177, 0, 24, 0.8) !important;
+        color: white !important;
+        font-weight: bold;
+    }
 
-    @media (max-width: 600px) {
-      .header { left: 50px; padding: 6px 10px; }
-      .header-subtitle { display: none; }
-      .contact-label { display: none; } /* En móvil solo queda el icono para no tapar mapa */
-      .contact-footer { padding: 10px; border-radius: 50%; bottom: 10px; left: 10px; }
-      .contact-icon { margin-right: 0; }
+    /* Tooltips (Nombre al pasar el ratón) */
+    .leaflet-tooltip {
+      background: var(--color-panel) !important;
+      color: var(--color-texto) !important;
+      border: 1px solid var(--color-rojo) !important;
+      font-weight: bold; padding: 4px 8px; border-radius: 4px;
     }
 
     /* Popups */
@@ -84,6 +77,12 @@
     .btn-popup { display: block; text-align: center; padding: 8px; text-decoration: none; font-weight: bold; font-size: 11px; border-radius: 4px; text-transform: uppercase; }
     .btn-maps { background: #333; color: white; border: 1px solid #444; }
     .btn-youtube { background: var(--color-youtube); color: white; }
+
+    @media (max-width: 600px) {
+      .header-subtitle, .contact-label { display: none; }
+      .contact-footer { padding: 10px; border-radius: 50%; bottom: 10px; left: 10px; }
+      .contact-icon { margin-right: 0; }
+    }
   </style>
 </head>
 <body>
@@ -104,8 +103,10 @@
   <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
   <script>
-    const map = L.map('map').setView([40.0, -3.7], 6);
+    const map = L.map('map').setView([37.3, -5.9], 10);
 
     const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
     const ortofoto = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19 });
@@ -114,7 +115,15 @@
 
     L.control.layers({"Mapa": osm, "Satélite": ortofoto, "Híbrido": hibrido}, null, { collapsed: true }).addTo(map);
 
-    const paranormalIcon = L.icon({ iconUrl: 'marker-paranormal.png', iconSize: [40, 40], iconAnchor: [20, 40], popupAnchor: [0, -36] });
+    // Icono reducido a 20x20
+    const paranormalIcon = L.icon({ 
+      iconUrl: 'marker-paranormal.png', 
+      iconSize: [20, 20], 
+      iconAnchor: [10, 20], 
+      popupAnchor: [0, -20] 
+    });
+
+    const markers = L.markerClusterGroup();
 
     function crearPopup(h) {
       const gMapsUrl = `https://www.google.com/maps?q=${h.lat},${h.lng}`;
@@ -133,8 +142,17 @@
 
     fetch('hotspots.json').then(r => r.json()).then(data => {
       data.forEach(h => {
-        if (h.lat && h.lng) L.marker([h.lat, h.lng], { icon: paranormalIcon }).addTo(map).bindPopup(crearPopup(h));
+        if (h.lat && h.lng) {
+          const marker = L.marker([h.lat, h.lng], { icon: paranormalIcon });
+          
+          // Tooltip con el nombre (PC)
+          marker.bindTooltip(h.name, { direction: 'top', offset: [0, -10] });
+          marker.bindPopup(crearPopup(h));
+          
+          markers.addLayer(marker);
+        }
       });
+      map.addLayer(markers);
     }).catch(e => console.error("Error:", e));
   </script>
 </body>
