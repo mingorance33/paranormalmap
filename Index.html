@@ -29,6 +29,7 @@
     html, body { margin: 0; padding: 0; height: 100%; background: var(--color-fondo); color: var(--color-texto); font-family: sans-serif; overflow: hidden; }
     #map { width: 100%; height: 100vh; z-index: 1; }
 
+    /* UI Elements */
     .header { position: fixed; top: 10px; left: 54px; display: flex; align-items: center; z-index: 1000; background: var(--color-panel); backdrop-filter: blur(8px); padding: 8px 14px; border-radius: 8px; border: 1px solid var(--color-borde); text-decoration: none; color: inherit; }
     .header-logo { width: 42px; height: 42px; border-radius: 50%; overflow: hidden; border: 1px solid var(--color-rojo); flex-shrink: 0; }
     .header-logo img { width: 100%; height: 100%; object-fit: cover; }
@@ -44,27 +45,27 @@
     #search-results { background: var(--color-panel); max-height: 200px; overflow-y: auto; width: 210px; display: none; border-top: 1px solid var(--color-borde); }
     .search-item { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid var(--color-borde); font-size: 0.85rem; }
 
-    /* Popups Estilo Ficha */
+    /* Popup Styles */
     .leaflet-popup-content-wrapper { background: rgba(0, 0, 0, 0.95); color: var(--color-texto); border: 1px solid var(--color-borde); padding: 0; overflow: hidden; border-radius: 8px; }
     .leaflet-popup-content { margin: 0; width: 220px !important; }
     .popup-img { width: 100%; height: 120px; object-fit: cover; border-bottom: 2px solid var(--color-rojo); display: block; }
     .popup-body { padding: 12px; }
-    .popup-title { font-weight: bold; color: var(--color-rojo); text-transform: uppercase; display: block; font-size: 14px; }
+    .popup-title { font-weight: bold; color: var(--color-rojo); text-transform: uppercase; display: block; font-size: 14px; margin-bottom: 4px; }
     
+    /* Etiquetas (Tags) - Nuevos Colores y Nombres */
     .tag-container { display: flex; flex-wrap: wrap; gap: 4px; margin: 8px 0; }
-    .tag { font-size: 9px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; font-weight: bold; border: 1px solid rgba(255,255,255,0.1); }
-    .tag-evp { background: #1a4d8a; color: #fff; }
-    .tag-vision { background: #8a1a1a; color: #fff; }
-    .tag-phys { background: #8a6d1a; color: #fff; }
+    .tag { font-size: 9px; padding: 3px 7px; border-radius: 4px; text-transform: uppercase; font-weight: bold; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 3px; }
+    .tag-psicofonia { background: #1a4d8a; color: #fff; } /* Azul */
+    .tag-aparicion { background: #b10018; color: #fff; }  /* Rojo */
+    .tag-poltergeist { background: #8a6d1a; color: #fff; } /* Oro */
 
-    .btn-popup { display: block; text-align: center; padding: 8px; text-decoration: none; font-weight: bold; font-size: 11px; border-radius: 4px; margin-top: 8px; transition: 0.2s; }
+    .btn-popup { display: block; text-align: center; padding: 8px; text-decoration: none; font-weight: bold; font-size: 11px; border-radius: 4px; margin-top: 8px; }
     .btn-maps { background: #333; color: white; }
     .btn-youtube { background: var(--color-youtube); color: white; }
-    .btn-popup:hover { opacity: 0.8; }
 
     .contact-footer { position: fixed; bottom: 20px; left: 20px; z-index: 1000; display: flex; align-items: center; background: var(--color-panel); padding: 10px 16px; border-radius: 30px; border: 1px solid var(--color-borde); text-decoration: none; color: var(--color-texto); backdrop-filter: blur(8px); }
 
-    @media (max-width: 600px) { .header-subtitle, .contact-label { display: none; } .header { left: 50px; } }
+    @media (max-width: 600px) { .contact-label { display: none; } .header { left: 50px; } }
   </style>
 </head>
 <body>
@@ -92,20 +93,25 @@
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
 
+    // Función de normalización de texto (quita tildes para facilitar la búsqueda)
+    function cleanText(text) {
+      return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
     function generarTags(descripcion) {
       if (!descripcion) return '';
-      const desc = descripcion.toLowerCase();
+      const text = cleanText(descripcion);
       let tagsHTML = '<div class="tag-container">';
+      let found = false;
       
       const reglas = [
-        { palabras: ['psicofonía', 'psicofonias', 'audio', 'voces', 'voz', 'evp'], clase: 'tag-evp', label: '🎙️ Audio' },
-        { palabras: ['aparición', 'apariciones', 'sombra', 'sombras', 'figura', 'espectro', 'visual', 'vemos'], clase: 'tag-vision', label: '👁️ Visual' },
-        { palabras: ['poltergeist', 'movimiento', 'golpes', 'ruido', 'físico', 'empujón', 'objetos'], clase: 'tag-phys', label: '🔥 Físico' }
+        { terminos: ['psicofonia', 'psicofonias', 'audio', 'voces', 'voz'], clase: 'tag-psicofonia', label: '🎙️ Psicofonías' },
+        { terminos: ['aparicion', 'apariciones', 'sombra', 'sombras', 'figura', 'espectro'], clase: 'tag-aparicion', label: '👁️ Apariciones' },
+        { terminos: ['poltergeist', 'movimiento', 'golpes', 'objetos'], clase: 'tag-poltergeist', label: '🔥 Poltergeist' }
       ];
 
-      let found = false;
       reglas.forEach(regla => {
-        if (regla.palabras.some(p => desc.includes(p))) {
+        if (regla.terminos.some(t => text.includes(t))) {
           tagsHTML += `<span class="tag ${regla.clase}">${regla.label}</span>`;
           found = true;
         }
@@ -117,8 +123,7 @@
 
     function crearPopup(h) {
       let thumbnail = '';
-      // Verificación de seguridad para el vídeo
-      if (h.video && h.video.trim() !== "") {
+      if (h.video && typeof h.video === 'string' && h.video.trim() !== "") {
           try {
               let videoId = "";
               if (h.video.includes('v=')) {
@@ -129,7 +134,7 @@
               if (videoId) {
                   thumbnail = `<img src="https://img.youtube.com/vi/${videoId}/mqdefault.jpg" class="popup-img" onerror="this.style.display='none'">`;
               }
-          } catch (e) { console.log("Error procesando URL de video"); }
+          } catch (e) { console.error("Error video URL"); }
       }
 
       const tags = generarTags(h.description);
@@ -148,7 +153,6 @@
       `;
     }
 
-    // Buscador UI
     const SearchControl = L.Control.extend({
         options: { position: 'topleft' },
         onAdd: function() {
@@ -161,12 +165,7 @@
     map.addControl(new SearchControl());
 
     const markers = L.markerClusterGroup();
-    const paranormalIcon = L.icon({ 
-        iconUrl: 'marker-paranormal.png', 
-        iconSize: [20, 20], 
-        iconAnchor: [10, 20], 
-        popupAnchor: [0, -20] 
-    });
+    const paranormalIcon = L.icon({ iconUrl: 'marker-paranormal.png', iconSize: [20, 20], iconAnchor: [10, 20], popupAnchor: [0, -20] });
 
     fetch('hotspots.json')
       .then(r => r.json())
@@ -176,23 +175,20 @@
           if (h.lat && h.lng) {
             const m = L.marker([h.lat, h.lng], { icon: paranormalIcon });
             m.bindPopup(crearPopup(h));
-            // Tooltip opcional con el nombre
             m.bindTooltip(h.name, { direction: 'top', offset: [0, -10] });
             markers.addLayer(m);
           }
         });
         map.addLayer(markers);
-      })
-      .catch(err => console.error("Error cargando JSON:", err));
+      });
 
-    // Lógica Buscador
     document.addEventListener('input', (e) => {
         if (e.target.id !== 'search-input') return;
-        const val = e.target.value.toLowerCase();
+        const val = cleanText(e.target.value);
         const resDiv = document.getElementById('search-results');
         resDiv.innerHTML = '';
         if (val.length < 2) { resDiv.style.display = 'none'; return; }
-        const filtered = allData.filter(h => h.name.toLowerCase().includes(val));
+        const filtered = allData.filter(h => cleanText(h.name).includes(val));
         if (filtered.length > 0) {
             resDiv.style.display = 'block';
             filtered.forEach(h => {
