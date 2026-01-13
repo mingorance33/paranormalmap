@@ -4,12 +4,13 @@
   <meta charset="UTF-8" />
   <title>Hotspots Paranormales | Agustín Bola Mórtimer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-
+  
   <meta property="og:title" content="👁️ Mapa de Investigación Paranormal">
-  <meta property="og:description" content="Explora los puntos más calientes detectados en mis investigaciones de Agustín Bola Mórtimer.">
-  <meta property="og:image" content="https://hotsptsparanormales.netlify.app/terrifie.jpg">
-  <meta property="og:url" content="https://hotsptsparanormales.netlify.app">
-   
+  <meta property="og:description" content="Explora los puntos más calientes detectados en mis investigaciones. Agustín Bola Mórtimer.">
+  <meta property="og:image" content="https://tu-sitio.netlify.app/terrifie.jpg">
+  <meta property="og:url" content="https://tu-sitio.netlify.app">
+  <meta name="twitter:card" content="summary_large_image">
+
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
@@ -34,7 +35,6 @@
       display: flex; align-items: center; z-index: 1000;
       background: var(--color-panel); backdrop-filter: blur(8px);
       padding: 8px 14px; border-radius: 8px; border: 1px solid var(--color-borde);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
       text-decoration: none; color: inherit; transition: 0.2s;
     }
     .header:hover { border-color: var(--color-rojo); transform: translateY(-2px); }
@@ -54,39 +54,38 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6); transition: all 0.3s ease;
     }
     .contact-footer:hover { border-color: var(--color-rojo); transform: scale(1.05); }
-    .contact-icon { font-size: 1.2rem; margin-right: 10px; color: var(--color-rojo); }
-    .contact-label { font-size: 0.8rem; font-weight: bold; }
 
-    /* Estilos de los Clusters (Círculos de agrupación) */
-    .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large {
-        background-color: rgba(177, 0, 24, 0.4) !important;
+    /* Buscador junto al Zoom */
+    .leaflet-control-search {
+        background: var(--color-panel); border: 2px solid rgba(255,255,255,0.2);
+        border-radius: 4px; display: flex; flex-direction: column;
     }
-    .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div {
-        background-color: rgba(177, 0, 24, 0.8) !important;
-        color: white !important;
-        font-weight: bold;
+    .search-wrapper { display: flex; align-items: center; padding: 2px; }
+    #search-input {
+        width: 0; height: 30px; border: none; background: transparent; color: white;
+        padding: 0; transition: width 0.3s, padding 0.3s; outline: none;
     }
+    .leaflet-control-search:hover #search-input { width: 200px; padding: 0 10px; }
+    .search-icon-btn { width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; color: var(--color-rojo); font-size: 1.1rem; }
+    #search-results { background: var(--color-panel); max-height: 200px; overflow-y: auto; width: 230px; display: none; border-top: 1px solid var(--color-borde); }
+    .search-item { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid var(--color-borde); font-size: 0.85rem; }
+    .search-item:hover { background: rgba(177, 0, 24, 0.3); }
 
-    /* Tooltips (Nombre al pasar el ratón) */
-    .leaflet-tooltip {
-      background: var(--color-panel) !important;
-      color: var(--color-texto) !important;
-      border: 1px solid var(--color-rojo) !important;
-      font-weight: bold; padding: 4px 8px; border-radius: 4px;
-    }
+    /* Tooltips e Iconos */
+    .leaflet-tooltip { background: var(--color-panel) !important; color: white !important; border: 1px solid var(--color-rojo) !important; }
+    .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background-color: rgba(177, 0, 24, 0.4) !important; }
+    .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div { background-color: rgba(177, 0, 24, 0.8) !important; color: white !important; }
 
     /* Popups */
     .leaflet-popup-content-wrapper { background: rgba(0, 0, 0, 0.95); color: var(--color-texto); border: 1px solid var(--color-borde); }
-    .popup-title { font-weight: bold; color: var(--color-rojo); text-transform: uppercase; margin-bottom: 5px; }
-    .popup-buttons { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-    .btn-popup { display: block; text-align: center; padding: 8px; text-decoration: none; font-weight: bold; font-size: 11px; border-radius: 4px; text-transform: uppercase; }
-    .btn-maps { background: #333; color: white; border: 1px solid #444; }
+    .popup-title { font-weight: bold; color: var(--color-rojo); text-transform: uppercase; }
+    .btn-popup { display: block; text-align: center; padding: 8px; text-decoration: none; font-weight: bold; font-size: 11px; border-radius: 4px; margin-top: 10px; }
+    .btn-maps { background: #333; color: white; }
     .btn-youtube { background: var(--color-youtube); color: white; }
 
     @media (max-width: 600px) {
       .header-subtitle, .contact-label { display: none; }
-      .contact-footer { padding: 10px; border-radius: 50%; bottom: 10px; left: 10px; }
-      .contact-icon { margin-right: 0; }
+      .contact-footer { padding: 10px; border-radius: 50%; }
     }
   </style>
 </head>
@@ -100,8 +99,8 @@
     </div>
   </a>
 
-  <a href="mailto:agustinbolamortimer33@gmail.com" class="contact-footer">
-    <span class="contact-icon">✉</span>
+  <a href="mailto:tu-correo@ejemplo.com" class="contact-footer">
+    <span class="contact-icon" style="color:var(--color-rojo); margin-right: 8px;">✉</span>
     <span class="contact-label">Si quieres contactar pincha aquí</span>
   </a>
 
@@ -112,53 +111,83 @@
 
   <script>
     const map = L.map('map').setView([37.3, -5.9], 10);
+    let allData = [];
 
+    // Capas
     const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
-    const ortofoto = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19 });
-    const etiquetas = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', { pane: 'markerPane', maxZoom: 19 });
-    const hibrido = L.layerGroup([ortofoto, etiquetas]);
+    const hibrido = L.layerGroup([
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'),
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png')
+    ]);
+    L.control.layers({"Mapa": osm, "Satélite/Híbrido": hibrido}, null, { collapsed: true }).addTo(map);
 
-    L.control.layers({"Mapa": osm, "Satélite": ortofoto, "Híbrido": hibrido}, null, { collapsed: true }).addTo(map);
+    // Control de Buscador Personalizado
+    const SearchControl = L.Control.extend({
+        options: { position: 'topleft' },
+        onAdd: function() {
+            const container = L.DomUtil.create('div', 'leaflet-control-search leaflet-bar');
+            container.innerHTML = `
+                <div class="search-wrapper">
+                    <div class="search-icon-btn">🔍</div>
+                    <input type="text" id="search-input" placeholder="Buscar lugar...">
+                </div>
+                <div id="search-results"></div>
+            `;
+            L.DomEvent.disableClickPropagation(container);
+            return container;
+        }
+    });
+    map.addControl(new SearchControl());
 
-    // Icono reducido a 30x30
+    const markers = L.markerClusterGroup();
     const paranormalIcon = L.icon({ 
       iconUrl: 'marker-paranormal.png', 
-      iconSize: [30, 30], 
+      iconSize: [20, 20], 
       iconAnchor: [10, 20], 
       popupAnchor: [0, -20] 
     });
 
-    const markers = L.markerClusterGroup();
-
     function crearPopup(h) {
       const gMapsUrl = `https://www.google.com/maps?q=${h.lat},${h.lng}`;
-      let botonYoutube = (h.video && h.video.trim() !== "") 
-        ? `<a href="${h.video}" target="_blank" class="btn-popup btn-youtube">🎥 Ver Investigación</a>` 
-        : "";
-
-      return `
-        <div class="popup-title">${h.name}</div>
-        <div style="font-size: 13px; opacity: 0.9;">${h.description}</div>
-        <div class="popup-buttons">
-          <a href="${gMapsUrl}" target="_blank" class="btn-popup btn-maps">📍 Cómo llegar</a>
-          ${botonYoutube}
-        </div>`;
+      let btnYT = (h.video) ? `<a href="${h.video}" target="_blank" class="btn-popup btn-youtube">🎥 Ver Investigación</a>` : "";
+      return `<div class="popup-title">${h.name}</div><div>${h.description}</div>
+              <a href="${gMapsUrl}" target="_blank" class="btn-popup btn-maps">📍 Cómo llegar</a>${btnYT}`;
     }
 
+    // Cargar Datos
     fetch('hotspots.json').then(r => r.json()).then(data => {
+      allData = data;
       data.forEach(h => {
         if (h.lat && h.lng) {
-          const marker = L.marker([h.lat, h.lng], { icon: paranormalIcon });
-          
-          // Tooltip con el nombre (PC)
-          marker.bindTooltip(h.name, { direction: 'top', offset: [0, -10] });
-          marker.bindPopup(crearPopup(h));
-          
-          markers.addLayer(marker);
+          const m = L.marker([h.lat, h.lng], { icon: paranormalIcon });
+          m.bindTooltip(h.name, { direction: 'top', offset: [0, -10] });
+          m.bindPopup(crearPopup(h));
+          markers.addLayer(m);
         }
       });
       map.addLayer(markers);
-    }).catch(e => console.error("Error:", e));
+    });
+
+    // Lógica del buscador
+    document.addEventListener('input', (e) => {
+        if (e.target.id !== 'search-input') return;
+        const val = e.target.value.toLowerCase();
+        const resDiv = document.getElementById('search-results');
+        resDiv.innerHTML = '';
+        if (val.length < 2) { resDiv.style.display = 'none'; return; }
+
+        const filtered = allData.filter(h => h.name.toLowerCase().includes(val) || h.description.toLowerCase().includes(val));
+        if (filtered.length > 0) {
+            resDiv.style.display = 'block';
+            filtered.forEach(h => {
+                const item = document.createElement('div');
+                item.className = 'search-item';
+                item.innerHTML = h.name;
+                item.onclick = () => { map.flyTo([h.lat, h.lng], 16); resDiv.style.display = 'none'; };
+                resDiv.appendChild(item);
+            });
+        } else { resDiv.style.display = 'none'; }
+    });
   </script>
 </body>
 </html>
