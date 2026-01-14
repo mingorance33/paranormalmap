@@ -5327,7 +5327,78 @@
   "lng": -71.9816,
   "description": "Las ruinas de Sacsayhuamán, en lo alto de Cusco, además de su importancia arqueológica, están rodeadas de relatos de luces extrañas y figuras que se aparecen entre las enormes piedras al anochecer. Visitantes nocturnos mencionan orbes luminosos, sombras gigantes y sensaciones de desorientación súbita en determinadas zonas del complejo.",
   "video": ""
+},
+  {
+  "name": "Hotel del Salto / Casa del Salto del Tequendama (Soacha, Cundinamarca)",
+  "lat": 4.5895,
+  "lng": -74.2950,
+  "description": "El antiguo Hotel del Salto, frente al Salto del Tequendama, fue construido a inicios del siglo XX sobre un abismo donde se han registrado numerosos suicidios, por lo que muchos lo consideran uno de los lugares más embrujados de Colombia. Visitantes y trabajadores relatan apariciones en los balcones, siluetas que observan desde las ventanas y una pesada atmósfera en los pasillos del edificio, hoy reconvertido en museo.",
+  "video": ""
+},
+{
+  "name": "Cementerio Central (Bogotá)",
+  "lat": 4.6040,
+  "lng": -74.0852,
+  "description": "El Cementerio Central de Bogotá es uno de los camposantos más antiguos del país y lugar de descanso de numerosos personajes históricos, pero también escenario de recorridos nocturnos de fantasmas. Se cuentan historias de voces que susurran nombres, pasos entre los mausoleos y apariciones que siguen a los visitantes durante las caminatas por sus estrechos pasillos.",
+  "video": ""
+},
+{
+  "name": "Hospital San Juan de Dios (Bogotá)",
+  "lat": 4.5960,
+  "lng": -74.0940,
+  "description": "El antiguo Hospital San Juan de Dios, parcialmente abandonado durante años, acumula historias de pacientes fallecidos y personal médico que habría quedado ligado al lugar. Testigos hablan de una enfermera que canta en los pasillos, sombras que se mueven en el área de la antigua morgue y lamentos que se escuchan al interior aun cuando el edificio se encuentra cerrado.",
+  "video": ""
+},
+{
+  "name": "Quinta de Bolívar (Bogotá)",
+  "lat": 4.6045,
+  "lng": -74.0663,
+  "description": "La Quinta de Bolívar, antigua residencia del Libertador en Bogotá, es un inmueble histórico que también arrastra fama de estar embrujado. Algunos relatos mencionan la presencia del espíritu de Simón Bolívar y de figuras que se desplazan por los jardines y habitaciones, generando sonidos de pasos y puertas que se abren sin que haya visitantes cerca.",
+  "video": ""
+},
+{
+  "name": "Castillo de San Felipe de Barajas (Cartagena de Indias)",
+  "lat": 10.4229,
+  "lng": -75.5354,
+  "description": "El Castillo de San Felipe de Barajas en Cartagena, fortaleza clave en la historia colonial, fue escenario de batallas, esclavitud y muertes violentas. En sus túneles y murallas se cuentan historias de soldados y prisioneros espectrales, pasos que resuenan en pasadizos vacíos y susurros en la oscuridad que ponen a prueba a los visitantes nocturnos.",
+  "video": ""
+},
+{
+  "name": "Castillo La Alboraya (Barranquilla)",
+  "lat": 10.9930,
+  "lng": -74.8100,
+  "description": "El Castillo La Alboraya, en Barranquilla, es una casona de más de dos siglos asociada a relatos de secuestros y torturas cometidos por un antiguo propietario. Las leyendas hablan de gritos en la noche, sombras en sus balcones y presencias que parecen observar a quienes se acercan al portón, motivo por el que muchos lo consideran uno de los lugares más embrujados del país.",
+  "video": ""
+},
+{
+  "name": "Pueblo fantasma de Armero (Tolima)",
+  "lat": 5.0310,
+  "lng": -74.8910,
+  "description": "El antiguo municipio de Armero quedó destruido por la avalancha del volcán Nevado del Ruiz en 1985, tragedia en la que murieron miles de personas y que convirtió el lugar en un pueblo fantasma. Entre las ruinas y cruces que recuerdan a las víctimas se cuentan historias de voces que llaman por ayuda, lamentos en la noche y apariciones en caminos donde ya no hay casas ni habitantes.",
+  "video": ""
+},
+{
+  "name": "La Jagua, pueblo de las brujas (Huila)",
+  "lat": 2.6950,
+  "lng": -75.5070,
+  "description": "El corregimiento de La Jagua, en Huila, es conocido como pueblo de las brujas por las leyendas que hablan de hechiceras europeas que habrían huido a la zona siglos atrás. Habitantes y visitantes relatan luces extrañas en las montañas, figuras femeninas que aparecen y desaparecen en los caminos rurales y relatos de hechizos transmitidos de generación en generación.",
+  "video": ""
+},
+{
+  "name": "Pueblo fantasma de La Siberia (La Calera, Cundinamarca)",
+  "lat": 4.7310,
+  "lng": -73.9710,
+  "description": "La Siberia, cerca de La Calera, fue un asentamiento industrial surgido alrededor de una fábrica de cemento que cerró a finales del siglo XX y quedó prácticamente abandonado. Hoy sus ruinas, calles desiertas y estructuras vacías son escenario de relatos de apariciones, ruidos metálicos inexplicables y una sensación de observación constante que ha consolidado su fama como pueblo fantasma.",
+  "video": ""
+},
+{
+  "name": "Lago de Tota (Boyacá)",
+  "lat": 5.5480,
+  "lng": -72.9980,
+  "description": "El Lago de Tota, uno de los lagos más grandes de Colombia, está ligado a la leyenda de una sirena que seduce a los pescadores con su canto para arrastrarlos al fondo. Habitantes de la zona narran historias de luces sobre la superficie del agua, siluetas que emergen entre la niebla y embarcaciones que parecen ser seguidas por algo bajo el lago en noches de niebla.",
+  "video": ""
 }
+
 
 
 
