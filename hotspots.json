@@ -5047,7 +5047,78 @@
   "lng": 108.4500,
   "description": "En los alrededores del paso Prenn hay varias villas y estructuras abandonadas integradas en un paisaje de bosque y niebla, muy frecuentadas por exploradores urbanos.[web:3][web:33] Entre los restos de construcciones coloniales y recientes se han documentado historias de figuras entre la arboleda, risas infantiles lejanas y luces que aparecen en ventanas sin cristales.[web:3][web:31] El aislamiento de la zona y su estética decadente han convertido el lugar en un icono de la Vietnam más espectral en redes y vídeos de exploración.[web:3][web:33]",
   "video": ""
+},
+  {
+  "name": "Isla de las Muñecas (Xochimilco, Ciudad de México)",
+  "lat": 19.27221,
+  "lng": -99.08879,
+  "description": "En una chinampa de la laguna de Teshuilo, en los canales de Xochimilco, se levanta la famosa Isla de las Muñecas, cubierta de muñecas colgadas en árboles y construcciones que crean un paisaje perturbador.[web:21][web:24] La leyenda cuenta que Julián Santana empezó a colocar muñecas para aplacar el espíritu de una niña que murió ahogada, y muchos visitantes aseguran que por la noche las muñecas parecen moverse, girar la cabeza o susurrar entre la densa vegetación del canal.[web:5][web:21]",
+  "video": ""
+},
+{
+  "name": "Panteón de Belén (Guadalajara, Jalisco)",
+  "lat": 20.6809,
+  "lng": -103.3523,
+  "description": "El Panteón de Belén, antiguo cementerio de Guadalajara, es célebre por sus historias de almas en pena y por leyendas como la del vampiro que habría sido enterrado allí con una estaca en el corazón.[web:6] Visitantes y guías relatan apariciones, sombras que se mueven entre las tumbas y una sensación opresiva que ha consolidado al camposanto como uno de los lugares más temidos de México.[web:5][web:6]",
+  "video": ""
+},
+{
+  "name": "Casa de los Lamentos (Guanajuato, Guanajuato)",
+  "lat": 21.0220,
+  "lng": -101.2626,
+  "description": "La Casa de los Lamentos, en las afueras de la ciudad de Guanajuato, fue escenario de asesinatos atribuidos a un antiguo dueño obsesionado con rituales y sacrificios, lo que originó su fama siniestra.[web:6][web:15] Hoy funciona como museo, y muchos visitantes afirman escuchar gritos, lamentos y pasos en pasillos vacíos, reforzando su reputación como uno de los inmuebles más embrujados del país.[web:6]",
+  "video": ""
+},
+{
+  "name": "Real de Catorce (San Luis Potosí)",
+  "lat": 23.6904,
+  "lng": -100.8840,
+  "description": "Real de Catorce es un antiguo pueblo minero convertido en pueblo fantasma, rodeado de montes áridos, túneles y un cementerio donde se dice que se aparecen espíritus de mineros y antiguos pobladores.[web:1][web:16] Leyendas sobre murmullos en el Túnel de Ogarrio, sombras en casonas abandonadas y rituales esotéricos recientes lo han transformado en un destino clave para el turismo de terror en México.[web:1][web:22]",
+  "video": ""
+},
+{
+  "name": "Museo de las Momias (Guanajuato, Guanajuato)",
+  "lat": 21.0202,
+  "lng": -101.2670,
+  "description": "El Museo de las Momias de Guanajuato alberga decenas de cuerpos momificados de forma natural, expuestos en vitrinas que impresionan tanto a visitantes como a investigadores.[web:6] Además del impacto visual, se cuentan historias de lamentos, pasos y figuras que parecen moverse entre los pasillos fuera del horario de visitas, lo que ha alimentado su fama paranormal.[web:6]",
+  "video": ""
+},
+{
+  "name": "Misnebalam (Yucatán)",
+  "lat": 21.1164,
+  "lng": -89.6570,
+  "description": "Misnebalam es un pueblo fantasma cercano a Mérida, abandonado tras hechos violentos ligados a la época henequenera y a la muerte trágica de un niño, cuya presencia muchos aseguran seguir viendo.[web:6][web:14] Las estructuras en ruina, los grafitis y el silencio del lugar se combinan con relatos de sombras, risas infantiles y voces que parecen surgir de la nada entre los antiguos edificios.[web:6][web:22]",
+  "video": ""
+},
+{
+  "name": "Castillo de Chapultepec (Ciudad de México)",
+  "lat": 19.4204,
+  "lng": -99.1819,
+  "description": "El Castillo de Chapultepec, en lo alto del Bosque de Chapultepec, ha sido residencia imperial, colegio militar y museo, acumulando siglos de historias trágicas y batallas.[web:5] Trabajadores y visitantes narran apariciones de soldados, figuras históricas y sombras que recorren pasillos y escaleras, lo que lo ha convertido en uno de los recintos con más fama de actividad paranormal en la capital.[web:5]",
+  "video": ""
+},
+{
+  "name": "La Condesa de Malibrán (Veracruz, Veracruz)",
+  "lat": 19.1930,
+  "lng": -96.1420,
+  "description": "En la zona de Malibrán, en el puerto de Veracruz, se cuenta la leyenda de la Condesa de Malibrán, asociada a una antigua casona donde se escuchan pasos, cadenas y lamentos nocturnos.[web:14] La historia mezcla traiciones, asesinatos y apariciones femeninas en balcones y corredores, lo que mantiene vivo el interés de curiosos y grupos de investigación paranormal.[web:14]",
+  "video": ""
+},
+{
+  "name": "Casa de la Hiena (Querétaro, Querétaro)",
+  "lat": 20.5970,
+  "lng": -100.3923,
+  "description": "La Casa de la Hiena en Querétaro se hizo tristemente célebre por un caso real de infanticidio ocurrido en su interior, que marcó para siempre la propiedad.[web:14] Desde entonces abundan los relatos sobre llantos infantiles, golpes en las paredes y figuras que se asoman a las ventanas, por lo que muchos vecinos evitan siquiera pasar frente a la fachada.[web:14][web:19]",
+  "video": ""
+},
+{
+  "name": "Ojuela (Mapimí, Durango)",
+  "lat": 25.7835,
+  "lng": -103.4923,
+  "description": "Ojuela es un antiguo pueblo minero cercano a Mapimí, famoso por su puente colgante y por los relatos de accidentes y muertes en las minas de la zona.[web:1][web:22] Entre ruinas y túneles, visitantes han reportado susurros, lamentos y figuras que parecen seguirlos a distancia, reforzando la impresión de que los mineros fallecidos aún rondan el lugar.[web:1][web:22]",
+  "video": ""
 }
+
 
 
 
