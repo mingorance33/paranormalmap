@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Mapa Paranormal - Agustín Bola Mortimer</title>
+  <title>Mapa Paranormal Agustín Bola Mortimer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
   <meta property="og:title" content="Mapa de Investigación Paranormal" />
@@ -12,13 +12,19 @@
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="es_ES" />
   <meta name="twitter:card" content="summary_large_image" />
+  <meta property="og:see_also" content="https://www.tiktok.com/@agustinbolamortimer666" />
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
 
   <style>
-    body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #0a0a0a; }
+    :root {
+      --primary-color: #ff4d4d;
+      --bg-dark: #0a0a0a;
+      --panel-bg: rgba(20, 20, 20, 0.95);
+    }
+    body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background-color: var(--bg-dark); color: white; }
     #map { height: 100vh; width: 100%; }
 
     /* Buscador */
@@ -28,43 +34,42 @@
     }
     #search-input {
       width: 100%; padding: 12px; border-radius: 25px; border: 1px solid #444;
-      background: rgba(20, 20, 20, 0.9); color: white; font-size: 16px;
+      background: var(--panel-bg); color: white; font-size: 16px;
     }
     #search-results {
-      background: rgba(20, 20, 20, 0.9); border-radius: 10px; margin-top: 5px;
-      max-height: 200px; overflow-y: auto; display: none; color: white;
+      background: var(--panel-bg); border-radius: 10px; margin-top: 5px;
+      max-height: 200px; overflow-y: auto; display: none;
     }
     .search-item { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; }
 
-    /* Estilo Popup con H2 para SEO */
-    .popup-content h2 { margin: 0 0 5px 0; font-size: 1.1rem; color: #ff4d4d; }
+    /* Popups con H2 para SEO */
+    .popup-content h2 { margin: 0 0 5px 0; font-size: 1.1rem; color: var(--primary-color); }
     
-    /* TEXTO OCULTO PARA GOOGLE (SEO) */
+    /* SEO INVISIBLE: No se ve en pantalla pero Google lo lee */
     .seo-hidden { display: none; }
   </style>
 </head>
 <body>
 
   <div id="search-container">
-    <input type="text" id="search-input" placeholder="Buscar lugar paranormal..." />
+    <input type="text" id="search-input" data-i18n-placeholder="search_placeholder" placeholder="Buscar..." />
     <div id="search-results"></div>
   </div>
 
   <div id="map"></div>
 
   <div class="seo-hidden">
-    <h1>Mapa de Investigaciones Paranormales Agustín Bola Mortimer</h1>
-    <p>Explora fenómenos inexplicables, avistamientos OVNIs y psicofonías. 
-       Investigaciones en el Palacio de San Telmo, Sevilla, Cádiz y más lugares encantados.</p>
+    <h1>Mapa de Investigaciones Paranormales de Agustín Bola Mortimer</h1>
+    <p>Descubre los puntos más calientes de actividad paranormal, avistamientos OVNIs y psicofonías. Investigaciones reales documentadas en el Palacio de San Telmo, Sevilla, Cádiz y más.</p>
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
 
   <script>
-    // Mantenemos tus capas oscuras originales
     const map = L.map('map').setView([37.38, -5.98], 6);
 
+    // Mantenemos tu capa oscura original
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap'
     }).addTo(map);
@@ -79,10 +84,22 @@
     let allData = [];
 
     function crearPopup(h) {
-      // Cambio de título dinámico para la pestaña
-      document.title = h.name + " - Investigación Paranormal";
-      let video = h.video ? `<iframe width="100%" height="150" src="${h.video.replace('watch?v=', 'embed/')}" frameborder="0" allowfullscreen style="margin-top:10px;"></iframe>` : "";
-      return `<div class="popup-content"><h2>${h.name}</h2><p>${h.description}</p>${video}</div>`;
+      // SEO: Título dinámico de la pestaña
+      document.title = h.name + " - Mapa Paranormal";
+      
+      let videoHtml = h.video ? `<div style="margin-top:10px;"><iframe width="100%" height="150" src="${h.video.replace('watch?v=', 'embed/')}" frameborder="0" allowfullscreen></iframe></div>` : "";
+      
+      return `
+        <div class="popup-content">
+          <h2>${h.name}</h2>
+          <p>${h.description}</p>
+          ${videoHtml}
+        </div>
+      `;
+    }
+
+    function cleanText(t) {
+      return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
 
     fetch('hotspots.json')
@@ -100,21 +117,20 @@
       });
 
     // Buscador
-    const input = document.getElementById('search-input');
-    const resDiv = document.getElementById('search-results');
-    input.addEventListener('input', (e) => {
-      const val = e.target.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    document.addEventListener("input", (e) => {
+      if (e.target.id !== "search-input") return;
+      const val = cleanText(e.target.value);
+      const resDiv = document.getElementById("search-results");
       resDiv.innerHTML = "";
       if (val.length < 2) { resDiv.style.display = "none"; return; }
-      const filtered = allData.filter(h => h.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(val));
-      filtered.forEach(h => {
-        const item = document.createElement('div');
-        item.className = 'search-item';
+
+      allData.filter(h => cleanText(h.name).includes(val)).forEach(h => {
+        const item = document.createElement("div");
+        item.className = "search-item";
         item.innerHTML = h.name;
         item.onclick = () => {
           map.flyTo([h.lat, h.lng], 16);
           resDiv.style.display = "none";
-          input.value = h.name;
         };
         resDiv.appendChild(item);
       });
