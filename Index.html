@@ -573,6 +573,37 @@
         applyStaticTranslations();
       })
       .catch((err) => console.error(err));
+    // Generador de Datos Estructurados (JSON-LD) para SEO
+function generarSchema(data) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "itemListElement": data.slice(0, 10).map((h, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "item": {
+        "@type": "Place",
+        "name": h.name,
+        "description": h.description,
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": h.lat,
+          "longitude": h.lng
+        },
+        "url": window.location.href
+      }
+    }))
+  };
+
+  const script = document.createElement('script');
+  script.type = "application/ld+json";
+  script.text = JSON.stringify(schema);
+  document.head.appendChild(script);
+}
+
+// Llamamos a la función dentro del fetch que ya tienes
+// Busca donde termina tu fetch('hotspots.json') y añade:
+// .then(data => { ... generarSchema(data); });
   </script>
 </body>
 </html>
