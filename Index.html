@@ -24,45 +24,62 @@
       --bg-dark: #0a0a0a;
       --panel-bg: rgba(20, 20, 20, 0.95);
     }
-    body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background-color: var(--bg-dark); color: white; }
+
+    body, html {
+      margin: 0; padding: 0; height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-dark);
+      color: white;
+      overflow: hidden;
+    }
+
     #map { height: 100vh; width: 100%; }
 
     /* Buscador */
     #search-container {
-      position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-      z-index: 1000; width: 90%; max-width: 400px;
+      position: absolute; top: 10px; left: 50%;
+      transform: translateX(-50%); z-index: 1000;
+      width: 90%; max-width: 400px;
     }
+
     #search-input {
-      width: 100%; padding: 12px; border-radius: 25px; border: 1px solid #444;
-      background: var(--panel-bg); color: white; font-size: 16px; outline: none;
+      width: 100%; padding: 12px; border-radius: 25px;
+      border: 1px solid #444; background: var(--panel-bg);
+      color: white; font-size: 16px; outline: none;
     }
+
     #search-results {
-      background: var(--panel-bg); border-radius: 10px; margin-top: 5px;
-      max-height: 200px; overflow-y: auto; display: none;
+      background: var(--panel-bg); border-radius: 10px;
+      margin-top: 5px; max-height: 200px; overflow-y: auto;
+      display: none; border: 1px solid #333;
     }
+
     .search-item { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; }
     .search-item:hover { background: #333; }
 
-    /* Popups con H2 para SEO */
-    .popup-content h2 { margin: 0 0 8px 0; font-size: 1.2rem; color: var(--primary-color); font-weight: bold; }
-    .popup-content p { font-size: 0.95rem; line-height: 1.4; color: #eee; }
-    
-    /* SEO Invisible para Google */
+    /* Estilo del Popup (Mejorado para SEO) */
+    .popup-content h2 { 
+      margin: 0 0 5px 0; 
+      font-size: 1.2rem; 
+      color: var(--primary-color);
+      font-weight: bold;
+    }
+    .popup-content p { font-size: 0.9rem; color: #333; line-height: 1.4; }
+
+    /* Ocultar H1 para SEO (Google lo ve, el usuario no) */
     .seo-hidden { display: none; }
   </style>
 </head>
 <body>
 
+  <h1 class="seo-hidden">Mapa de Investigaciones Paranormales de Agustín Bola Mortimer</h1>
+
   <div id="search-container">
-    <input type="text" id="search-input" data-i18n-placeholder="search_placeholder" placeholder="Buscar lugar paranormal..." />
+    <input type="text" id="search-input" data-i18n-placeholder="search_placeholder" placeholder="Buscar..." />
     <div id="search-results"></div>
   </div>
 
   <div id="map"></div>
-
-  <div class="seo-hidden">
-    <h1>Mapa de Investigaciones Paranormales y Avistamientos - Agustín Bola Mortimer</h1>
-  </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
@@ -70,7 +87,7 @@
   <script>
     const map = L.map('map').setView([37.38, -5.98], 6);
 
-    // Mantenemos tus capas oscuras
+    // Tu capa oscura original de CartoDB
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap'
     }).addTo(map);
@@ -84,16 +101,17 @@
 
     let allData = [];
 
-    // FUNCIÓN MEJORADA CON TÍTULO DINÁMICO Y H2
+    // Función del Popup ajustada para SEO dinámico
     function crearPopup(h) {
-      // SEO: Cambia el título de la pestaña según lo que el usuario ve
+      // Cambio de título dinámico (Mejora SEO)
       document.title = h.name + " - Mapa Paranormal";
       
       let videoHtml = h.video ? `<div style="margin-top:10px;"><iframe width="100%" height="150" src="${h.video.replace('watch?v=', 'embed/')}" frameborder="0" allowfullscreen></iframe></div>` : "";
       
+      // Uso de H2 para el nombre (Mejora SEO)
       return `
         <div class="popup-content">
-          <h2>${h.name}</h2> 
+          <h2>${h.name}</h2>
           <p>${h.description}</p>
           ${videoHtml}
         </div>
@@ -109,36 +127,39 @@
       .then(data => {
         allData = data;
         const markers = L.markerClusterGroup();
+
         data.forEach(h => {
           if (h.lat && h.lng) {
             const m = L.marker([h.lat, h.lng], { icon: paranormalIcon })
-                     .bindPopup(crearPopup(h));
+                       .bindPopup(crearPopup(h));
+            
+            m.bindTooltip(h.name, { direction: "top", offset: [0, -5] });
             markers.addLayer(m);
           }
         });
         map.addLayer(markers);
-      });
 
-    // Buscador
-    document.addEventListener("input", (e) => {
-      if (e.target.id !== "search-input") return;
-      const val = cleanText(e.target.value);
-      const resDiv = document.getElementById("search-results");
-      resDiv.innerHTML = "";
-      if (val.length < 2) { resDiv.style.display = "none"; return; }
+        // Eventos del buscador
+        document.addEventListener("input", (e) => {
+          if (e.target.id !== "search-input") return;
+          const val = cleanText(e.target.value);
+          const resDiv = document.getElementById("search-results");
+          resDiv.innerHTML = "";
+          if (val.length < 2) { resDiv.style.display = "none"; return; }
 
-      allData.filter(h => cleanText(h.name).includes(val)).forEach(h => {
-        const item = document.createElement("div");
-        item.className = "search-item";
-        item.innerHTML = h.name;
-        item.onclick = () => {
-          map.flyTo([h.lat, h.lng], 16);
-          resDiv.style.display = "none";
-        };
-        resDiv.appendChild(item);
+          allData.filter(h => cleanText(h.name).includes(val)).forEach(h => {
+            const item = document.createElement("div");
+            item.className = "search-item";
+            item.innerHTML = h.name;
+            item.onclick = () => {
+              map.flyTo([h.lat, h.lng], 16);
+              resDiv.style.display = "none";
+            };
+            resDiv.appendChild(item);
+          });
+          resDiv.style.display = "block";
+        });
       });
-      resDiv.style.display = "block";
-    });
   </script>
 </body>
 </html>
