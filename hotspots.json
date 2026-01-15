@@ -5677,7 +5677,80 @@
   "lng": -68.0180,
   "description": "En las calles de Puerto Cabello se cuenta desde tiempos coloniales la historia de un carruaje envuelto en llamas, arrastrado por caballos espectrales y conocido como el carretón fantasma. Según la leyenda, aparece de madrugada para llevarse a las almas de quienes viven en pecado, y muchos aseguran haber escuchado el ruido de ruedas y cascos sobre los adoquines sin ver vehículo alguno.",
   "video": "https://www.youtube.com/watch?v=JmwYO_a-68c"
-}
+},
+  
+  {
+    "name": "Castillo de Berat - BERAT",
+    "lat": 40.7056,
+    "lng": 19.9522,
+    "description": "El Castillo de Berat, en la ciudad de Berat, es conocido por las leyendas de la Dama Blanca, un espíritu asociado a la joven Lady Maria. Testigos hablan de apariciones espectrales en las murallas, pasos en los pasillos de piedra y zonas de frío extremo en plena noche. Muchos visitantes que exploran el castillo de Berat reportan sombras humanas que se desvanecen cerca de las antiguas casas dentro de la fortaleza y una sensación opresiva al caminar solos por las torres.",
+    "video": "https://ling-app.com/cht/blog/haunted-places-in-albania/"
+  },
+  {
+    "name": "Castillo de Rozafa - SHKODËR",
+    "lat": 42.0587,
+    "lng": 19.4960,
+    "description": "El Castillo de Rozafa, en la ciudad de Shkodër, domina el lago Shkodër y está envuelto en historias de amantes separados cuyos lamentos aún se escuchan entre las ruinas. Visitantes nocturnos describen llantos lejanos, voces apagadas y una presencia pesada en las zonas más altas del castillo. La leyenda local sostiene que las almas de las princesas de Shkodër siguen vagando por las murallas buscando a sus pastores perdidos.",
+    "video": "https://www.thegabaghoul.org/post/top-3-most-haunted-places-in-albania-the-gabaghoul-chronicles-1"
+  },
+  {
+    "name": "Castillo de Krujë - KRUJË",
+    "lat": 41.5079,
+    "lng": 19.7938,
+    "description": "El Castillo de Krujë, en la ciudad de Krujë, es famoso por las apariciones del espíritu de Gjergj Skanderbeg, héroe nacional albanés. Investigadores y turistas aseguran haber visto una figura blanca patrullando las murallas y escuchado sonidos de armaduras y pasos en salas vacías. La fortaleza de Krujë, hoy museo, concentra testimonios de luces anómalas, cambios bruscos de temperatura y sensación de vigilancia constante al caer la noche.",
+    "video": "https://www.thegabaghoul.org/post/top-3-most-haunted-places-in-albania-the-gabaghoul-chronicles-1"
+  },
+  {
+    "name": "Ciudad vieja y castillo - BERAT",
+    "lat": 40.7080,
+    "lng": 19.9440,
+    "description": "El casco antiguo de Berat, en la ciudad de Berat, conocido como la 'ciudad de las mil ventanas', acumula relatos de apariciones en casas históricas y callejones empedrados. Vecinos hablan de figuras vestidas de época observando desde balcones antiguos, pasos sobre madera en edificios vacíos y susurros en albanés antiguo. Algunos guías de Berat aseguran que ciertos tramos de la ciudad vieja concentran energías residuales de batallas y ejecuciones del pasado.",
+    "video": "https://ling-app.com/cht/blog/haunted-places-in-albania/"
+  },
+  {
+    "name": "Zona del lago Shkodra - SHKODËR",
+    "lat": 42.0680,
+    "lng": 19.5100,
+    "description": "La zona del lago Shkodra, junto a la ciudad de Shkodër, es escenario de historias sobre una figura fantasmal que recorre la orilla por la noche. Pescadores y visitantes cuentan haber visto siluetas translúcidas cerca del agua y escuchado voces que parecen salir del lago. Muchos relatan que al caminar junto al lago en Shkodër sienten una mezcla de melancolía intensa y una presencia que los sigue en silencio.",
+    "video": "https://ling-app.com/cht/blog/haunted-places-in-albania/"
+  },
+  {
+    "name": "Estación de tren embrujada - FIER",
+    "lat": 40.7243,
+    "lng": 19.5561,
+    "description": "La estación de tren embrujada de Fier, en la ciudad de Fier, está ligada a la leyenda de una mujer que murió en un accidente ferroviario y cuyo espíritu sigue anclado a los andenes. Quienes pasan de noche por la estación de Fier cuentan que escuchan gritos ahogados, el eco de un tren que nunca llega y pasos apresurados en andenes vacíos. Algunos exploradores han informado de interferencias en sus equipos y baterías que se descargan de golpe en la zona.",
+    "video": "https://ling-app.com/cht/blog/haunted-places-in-albania/"
+  },
+  {
+    "name": "Monasterio de Santa María - LEZHË",
+    "lat": 41.7860,
+    "lng": 19.6430,
+    "description": "El Monasterio de Santa María, en la ciudad de Lezhë, es citado por los locales como foco de fenómenos extraños. Visitantes describen susurros en idiomas antiguos en los pasillos del monasterio de Lezhë y sombras que cruzan los claustros cuando no hay nadie. Se mencionan también luces que aparecen y desaparecen en las ventanas del edificio religioso durante la noche.",
+    "video": "https://ling-app.com/cht/blog/haunted-places-in-albania/"
+  },
+  {
+    "name": "Castillo y casco histórico - GJIROKASTËR",
+    "lat": 40.0749,
+    "lng": 20.1384,
+    "description": "El Castillo de Gjirokastër y su casco histórico, en la ciudad de Gjirokastër, son conocidos por relatos de figuras espectrales que patrullan las murallas y viejas casas de piedra. Visitantes reportan voces apagadas, sonidos metálicos y puertas que se mueven solas dentro del castillo de Gjirokastër. Las empinadas calles del centro histórico también están asociadas a apariciones de antiguos soldados y residentes.",
+    "video": "https://ling-app.com/cht/blog/haunted-places-in-albania/"
+  },
+  {
+    "name": "Paseo de montañas malditas - ALPES ALBANESes (PROKLETIJE)",
+    "lat": 42.4410,
+    "lng": 19.8120,
+    "description": "Los llamados Montes Malditos o Alpes Albaneses, en el norte de Albania, forman una cordillera asociada a maldiciones, duelos de sangre y desapariciones. Los pueblos de montaña de la zona de Prokletije relatan la leyenda de una madre que maldijo a un hada y a las montañas, condenando el territorio a una presencia oscura. Senderistas que atraviesan estos valles en el norte de Albania cuentan haber escuchado lamentos que resuenan entre las cumbres y sentido una energía densa al caer la noche.",
+    "video": "https://moonmausoleum.com/the-accursed-mountains-of-albania/"
+  },
+  {
+    "name": "Pueblo antiguo de Vuno - VUNO, RIVIERA ALBANESA",
+    "lat": 40.1080,
+    "lng": 19.7200,
+    "description": "El antiguo pueblo de Vuno, en la zona de la Riviera Albanesa, guarda la leyenda de una anciana convertida en bruja que vaga por las calles al anochecer. Vecinos de Vuno relatan ruidos de pasos sobre piedra, golpes en puertas de casas vacías y una figura encorvada que se ve desaparecer en los callejones. El ambiente del pueblo de Vuno se describe como cargado, con sensación de ser observado desde ventanas oscuras.",
+    "video": "https://ling-app.com/cht/blog/haunted-places-in-albania/"
+  }
+
+
 
 
 
