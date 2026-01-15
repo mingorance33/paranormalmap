@@ -362,7 +362,7 @@
     const map = L.map("map", { zoomControl: true }).setView([37.3, -5.9], 10);
     
       // Intentar localizar al usuario
-    map.locate({ setView: true, maxZoom: 14 });
+    map.locate({ setView: true, maxZoom: 10 });
     
     // Si se encuentra la ubicación, opcionalmente se puede poner un círculo o marcador
     map.on('locationfound', function(e) {
