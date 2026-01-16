@@ -13278,6 +13278,54 @@
     "lng": -72.0530,
     "description": "Val-Jalbert es un pueblo factoría de los años 20 abandonado tras el cierre de su fábrica de papel; hoy, entre edificios congelados en el tiempo, se cuentan historias de una maestra que seguiría vagando por la escuela y de luces que se encienden en casas donde nadie duerme desde hace décadas.",
     "video": "https://canadaabroad.com/news/general-news/haunted-places-canada-guide/"
-  }
+  },
+  {
+  "name": "Basílica y Pozo de las apariciones - EL PALMAR DE TROYA, SEVILLA",
+  "lat": 37.0805,
+  "lng": -5.7860,
+  "description": "En la finca de La Alcaparrosa, a las afueras de El Palmar de Troya, cuatro niñas aseguraron ver a la Virgen María en marzo de 1968, lo que convirtió el lugar en un foco masivo de peregrinaciones y fenómenos místicos con videntes en éxtasis, estigmas y supuestos milagros. Sobre ese enclave se levantó después la Basílica-Catedral de la Iglesia Palmariana, un recinto amurallado asociado a una de las sectas más controvertidas de España, donde se habla de visiones de Cristo, de la Virgen y del Demonio, rezos incesantes y una atmósfera que muchos visitantes describen como inquietante, casi fantasmagórica, especialmente en torno al pozo y a la antigua zona de las apariciones.",
+  "video": "https://lugaresconhistoria.com/el-palmar-de-troya"
+},
+ 
+{
+  "name": "Las siete cabezas y el cerro maldito - LAS CABEZAS DE SAN JUAN, SEVILLA",
+  "lat": 36.9810,
+  "lng": -5.9390,
+  "description": "Una leyenda popular de Las Cabezas de San Juan cuenta que, en tiempos de bandoleros y ajustes de cuentas, siete hombres fueron decapitados y sus cabezas clavadas en estacas a la entrada del camino como advertencia, dando origen al nombre del lugar y al miedo a pasar de noche por la zona. Tradiciones orales recogidas en el municipio hablan de un cerro relacionado con estas ejecuciones, donde algunos vecinos aseguran ver sombras inmóviles junto al camino, oír susurros entre los olivares y sentir que algo les observa cuando cruzan el paraje en la oscuridad, como si aquellos ajusticiados siguieran vigilando el paso.",
+  "video": "https://www.facebook.com/61581056135120/posts/dia-55-de-el-reto-una-historia-de-terror-para-cada-pueblo-andaluz-hoy-las-cabeza/10160997299275985/"
+},
+  {
+  "name": "La monja Teresa en la Calle de las Monjas - LEBRIJA, SEVILLA",
+  "lat": 36.9200,
+  "lng": -6.0750,
+  "description": "En Lebrija se cuenta la leyenda de la monja Teresa de Rivero, religiosa que habría muerto al pasar por la estrecha Calle de las Monjas cuando le cayeron encima unos pinchos de una ventana alta, atravesándola y dejándola agonizar en el suelo. La tradición local dice que en el pavimento quedó marcado un azulejo de piedra y que, si alguien lo pisa y vuelve a medianoche al mismo lugar, verá a la monja Teresa llorando junto a la ventana donde murió mientras los pinchos vuelven a caer simbólicamente, por lo que muchos vecinos evitan cruzar la calle de noche o pisar esa losa maldita.",
+  "video": "https://sites.google.com/iesvirgendelcastillo.es/cuentamelebrija/historias-y-leyendas"
+},
+  {
+  "name": "La venta fantasma del camino real - EL CUERVO DE SEVILLA",
+  "lat": 36.8510,
+  "lng": -6.0410,
+  "description": "En El Cuervo de Sevilla se cuenta que, cuando cae la noche en el antiguo camino real entre Sevilla y Cádiz, aparece junto a la carretera una vieja venta iluminada donde antaño paraban arrieros y viajeros, pese a que hoy no queda rastro físico de ella. La leyenda dice que quienes se detienen allí encuentran una posada llena de gente silenciosa y un ventero que ofrece vino oscuro; al amanecer, el viajero despierta tirado en el campo, sin venta ni edificio a la vista, a veces con marcas en la piel o desorientado durante horas, como si hubiera pasado la noche en un lugar que ya no pertenece del todo a este mundo.",
+  "video": "https://www.facebook.com/groups/568217370334107/posts/2248704278952066/"
+},
+ 
+{
+  "name": "La monja de la calle Vid y el convento del Espíritu Santo - JEREZ DE LA FRONTERA, CÁDIZ",
+  "lat": 36.6815,
+  "lng": -6.1385,
+  "description": "En la intramuros de Jerez, junto al antiguo convento del Espíritu Santo y la estrecha calle Vid, se cuenta la historia de una monja que murió de forma violenta y jamás encontró descanso, hasta el punto de haberse convertido en una de las leyendas más oscuras de la ciudad. Una noche, según el relato, dos hombres se cruzaron con una monja que caminaba sola y quisieron acompañarla hasta el convento; al doblar la esquina, uno de ellos se encontró completamente solo y, al regresar sobre sus pasos, halló a su compañero degollado en el suelo, con el convento como telón de fondo y sin rastro de la religiosa, lo que dio pie a la creencia de que el espíritu de aquella hermana sigue apareciéndose en la calle Vid para atraer a los vivos hacia una muerte misteriosa.",
+  "video": "https://www.lavozdelsur.es/vida/el-trote-de-la-culebra/algo-de-otro-mundo-en-intramuros-de-jerez-de-la-frontera_75181_102.html"
+},
+  {
+  "name": "El fantasma de la Cuesta del Espíritu Santo - JEREZ DE LA FRONTERA, CÁDIZ",
+  "lat": 36.6818,
+  "lng": -6.1400,
+  "description": "La Cuesta del Espíritu Santo, junto al antiguo convento del mismo nombre, es uno de los rincones más inquietantes de Jerez, asociada a la leyenda del fantasma de la novicia María de la Merced. En el siglo XVII, tras ser obligada a separarse de su amante por su padre y por la presión del convento, la joven acabó ahorcándose en el jardín y fue enterrada allí mismo; desde entonces, se dice que su espíritu recorre la cuesta buscando al amado al que no dejaron ver, que se oyen pasos y sollozos junto al viejo edificio y que la zona permanece casi siempre desierta al anochecer, como si la ciudad evitara instintivamente cruzarse con ella.",
+  "video": "https://www.lavozdelsur.es/vida/el-trote-de-la-culebra/el-fantasma-de-la-cuesta-del-espiritu-santo_71109_102.html"
+}
+
+
+
+
 
 ]
