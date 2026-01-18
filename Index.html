@@ -1,682 +1,637 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-	<meta charset="utf-8">
-	<title>Mapa de Lugares Malditos</title>
-	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<meta name="description" content="">
-	<style>
-		body {
-			margin: 0;
-			padding: 0;
-			font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-			background-color: black;
-			color: #cccccc;
-		}
-
-		#map {
-			position: absolute;
-			top: 0;
-			bottom: 0;
-			width: 100%;
-			height: 100%;
-			z-index: 1;
-		}
-
-		#right-panel {
-			position: absolute;
-			right: 0;
-			top: 0;
-			height: 100%;
-			width: 30%;
-			max-width: 450px;
-			min-width: 280px;
-			background-color: #111;
-			color: #ffffff;
-			z-index: 2;
-			display: flex;
-			flex-direction: column;
-			pointer-events: auto;
-		}
-
-		#title-bar {
-			background-color: #222;
-			padding: 10px 15px;
-			border-bottom: 1px solid #444;
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-		}
-
-		#title-bar h1 {
-			font-size: 18px;
-			margin: 0;
-		}
-
-		#title-bar #total-count {
-			font-size: 14px;
-			color: #888;
-		}
-
-		#filter-bar {
-			padding: 10px 15px;
-			background-color: #1a1a1a;
-			border-bottom: 1px solid #333;
-			display: flex;
-			flex-wrap: wrap;
-			gap: 8px;
-		}
-
-		#filter-bar select,
-		#filter-bar input {
-			background-color: #222;
-			color: #fff;
-			border: 1px solid #444;
-			border-radius: 4px;
-			padding: 4px 6px;
-			font-size: 13px;
-		}
-
-		#filter-bar input {
-			flex: 1 1 120px;
-		}
-
-		#filter-bar select {
-			flex: 0 0 110px;
-		}
-
-		#location-details {
-			flex: 1;
-			padding: 10px 15px;
-			overflow-y: auto;
-		}
-
-		.location-title {
-			font-size: 16px;
-			font-weight: bold;
-			margin-bottom: 5px;
-		}
-
-		.location-meta {
-			font-size: 12px;
-			color: #999;
-			margin-bottom: 10px;
-		}
-
-		.location-description {
-			font-size: 13px;
-			line-height: 1.4;
-			margin-bottom: 10px;
-		}
-
-		.location-video {
-			margin-top: 10px;
-		}
-
-		.location-video a {
-			color: #7fb3ff;
-			text-decoration: none;
-			font-size: 13px;
-		}
-
-		.location-video a:hover {
-			text-decoration: underline;
-		}
-
-		#credits {
-			font-size: 11px;
-			color: #777;
-			padding: 8px 15px;
-			border-top: 1px solid #333;
-			background-color: #181818;
-		}
-
-		#credits a {
-			color: #999;
-			text-decoration: none;
-		}
-
-		#credits a:hover {
-			color: #fff;
-			text-decoration: underline;
-		}
-
-		@media (max-width: 900px) {
-			#right-panel {
-				width: 100%;
-				max-width: none;
-				height: 45%;
-				top: auto;
-				bottom: 0;
-			}
-
-			#map {
-				height: 55%;
-			}
-		}
-
-		@media (max-width: 600px) {
-			#title-bar h1 {
-				font-size: 14px;
-			}
-
-			#filter-bar {
-				padding: 8px 10px;
-			}
-		}
-
-		.leaflet-popup-content-wrapper {
-			background: #111;
-			color: #ddd;
-			border-radius: 8px;
-		}
-
-		.leaflet-popup-tip {
-			background: #111;
-		}
-
-		.popup-title {
-			font-weight: bold;
-			margin-bottom: 5px;
-			font-size: 14px;
-		}
-
-		.popup-description {
-			font-size: 12px;
-			line-height: 1.3;
-		}
-
-		.popup-video-link {
-			margin-top: 8px;
-			display: block;
-			font-size: 12px;
-			color: #7fb3ff;
-			text-decoration: none;
-		}
-
-		.popup-video-link:hover {
-			text-decoration: underline;
-		}
-
-		#search-input::-webkit-input-placeholder {
-			color: #666;
-		}
-
-		#search-input:-moz-placeholder {
-			color: #666;
-		}
-
-		#search-input::-moz-placeholder {
-			color: #666;
-		}
-
-		#search-input:-ms-input-placeholder {
-			color: #666;
-		}
-
-		#search-input::placeholder {
-			color: #666;
-		}
-
-		.leaflet-control-attribution {
-			display: none;
-		}
-
-		body {
-			-ms-overflow-style: none;
-			scrollbar-width: none;
-		}
-
-		body::-webkit-scrollbar {
-			display: none;
-		}
-
-		#search-input {
-			width: 100%;
-		}
-
-		select {
-			max-width: 120px;
-		}
-
-		html,
-		body {
-			background-color: #000 !important;
-		}
-
-		#zoom-in,
-		#zoom-out {
-			position: absolute;
-			z-index: 3;
-			right: 10px;
-			width: 32px;
-			height: 32px;
-			border-radius: 50%;
-			border: none;
-			background-color: rgba(0,0,0,0.7);
-			color: #fff;
-			cursor: pointer;
-			font-size: 20px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-		}
-
-		#zoom-in {
-			top: 10px;
-		}
-
-		#zoom-out {
-			top: 52px;
-		}
-
-		#zoom-in:hover,
-		#zoom-out:hover {
-			background-color: rgba(255,255,255,0.1);
-		}
-
-		.leaflet-control-container .leaflet-top.leaflet-left .leaflet-control-zoom {
-			display: none !important;
-		}
-
-		#right-panel span {
-			color: #888;
-		}
-
-		.highlighted {
-			background-color: rgba(255,255,0,0.1);
-		}
-
-		#hint {
-			font-size: 12px;
-			color: #777;
-			padding: 4px 15px 8px 15px;
-			border-bottom: 1px solid #333;
-			background-color: #151515;
-		}
-
-		#hint span {
-			color: #aaa;
-		}
-
-		#map {
-			touch-action: none;
-		}
-
-		a {
-			color: #7fb3ff;
-		}
-
-		a:hover {
-			color: #a4c8ff;
-		}
-
-		/* Overlay de inicio */
-		#startup-overlay {
-			position: fixed;
-			inset: 0;
-			background: rgba(0, 0, 0, 0.9);
-			color: #fff;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			text-align: center;
-			padding: 1.5rem;
-			font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-				sans-serif;
-			font-size: 1.2rem;
-			z-index: 9999;
-			opacity: 0;
-			pointer-events: none;
-			transition: opacity 0.6s ease;
-		}
-		#startup-overlay.visible {
-			opacity: 1;
-			pointer-events: auto;
-		}
-		#startup-overlay span {
-			display: block;
-			max-width: 480px;
-			line-height: 1.5;
-		}
-	</style>
-	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-		integrity="sha256-sA+e2at/6M8zHnHnS8E1A6LJbG3p3pbt2J0iC6tWSw="
-		crossorigin=""/>
-</head>
-
-<body>
-	<div id="map"></div>
-
-	<div id="right-panel">
-		<div id="title-bar">
-			<h1>Mapa de Lugares Malditos</h1>
-			<div id="total-count">0 lugares</div>
-		</div>
-		<div id="hint">
-			<span>Consejo:</span> Usa el buscador o filtra por país para encontrar lugares malditos concretos.
-		</div>
-		<div id="filter-bar">
-			<select id="country-filter">
-				<option value="">Todos los países</option>
-			</select>
-			<input type="text" id="search-input" placeholder="Buscar por nombre, descripción..." />
-		</div>
-		<div id="location-details">
-			<div class="location-title">Selecciona un marcador</div>
-			<div class="location-meta">Haz clic en un marcador del mapa para ver los detalles aquí.</div>
-			<div class="location-description">
-				Este mapa recopila manicomios, pueblos fantasma, hospitales abandonados y otros lugares malditos de todo el mundo.
-			</div>
-		</div>
-		<div id="credits">
-			Hecho con 🖤 para mapas y lugares oscuros |
-			Datos compilados manualmente |
-			Mapa: © <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap</a> contributors
-		</div>
-	</div>
-
-	<!-- Overlay de inicio -->
-	<div id="startup-overlay" aria-hidden="true">
-		<span></span>
-	</div>
-
-	<button id="zoom-in">+</button>
-	<button id="zoom-out">−</button>
-
-	<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
-		integrity="sha256-nPLb7G8G92Lh0bXnH3UX0rDhmG8I5pIeSue2FY0zMQ8="
-		crossorigin=""></script>
-
-	<script>
-		const map = L.map('map', {
-			worldCopyJump: true
-		}).setView([20, 0], 2);
-
-		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-			maxZoom: 19
-		}).addTo(map);
-
-		document.getElementById('zoom-in').addEventListener('click', () => {
-			map.zoomIn();
-		});
-		document.getElementById('zoom-out').addEventListener('click', () => {
-			map.zoomOut();
-		});
-
-		let hotspots = [];
-		let markers = [];
-		let markerGroup = L.layerGroup().addTo(map);
-
-		const countryFilter = document.getElementById('country-filter');
-		const searchInput = document.getElementById('search-input');
-		const totalCountEl = document.getElementById('total-count');
-		const locationDetails = document.getElementById('location-details');
-
-		function renderDetails(hotspot) {
-			locationDetails.innerHTML = '';
-
-			const titleEl = document.createElement('div');
-			titleEl.className = 'location-title';
-			titleEl.textContent = hotspot.name;
-
-			const metaEl = document.createElement('div');
-			metaEl.className = 'location-meta';
-			metaEl.textContent = `Coordenadas: ${hotspot.lat}, ${hotspot.lng}`;
-
-			const descEl = document.createElement('div');
-			descEl.className = 'location-description';
-			descEl.textContent = hotspot.description;
-
-			locationDetails.appendChild(titleEl);
-			locationDetails.appendChild(metaEl);
-			locationDetails.appendChild(descEl);
-
-			if (hotspot.video) {
-				const videoEl = document.createElement('div');
-				videoEl.className = 'location-video';
-				const a = document.createElement('a');
-				a.href = hotspot.video;
-				a.target = '_blank';
-				a.rel = 'noopener';
-				a.textContent = 'Ver vídeo / fuente relacionada';
-				videoEl.appendChild(a);
-				locationDetails.appendChild(videoEl);
-			}
-		}
-
-		function createPopupContent(hotspot) {
-			const container = document.createElement('div');
-			const titleEl = document.createElement('div');
-			titleEl.className = 'popup-title';
-			titleEl.textContent = hotspot.name;
-
-			const descEl = document.createElement('div');
-			descEl.className = 'popup-description';
-			descEl.textContent = hotspot.description;
-
-			container.appendChild(titleEl);
-			container.appendChild(descEl);
-
-			if (hotspot.video) {
-				const link = document.createElement('a');
-				link.href = hotspot.video;
-				link.target = '_blank';
-				link.rel = 'noopener';
-				link.className = 'popup-video-link';
-				link.textContent = 'Ver vídeo / fuente';
-				container.appendChild(link);
-			}
-
-			return container;
-		}
-
-		function extractCountry(name) {
-			const match = name.match(/\(([^)]+)\)\s*$/);
-			if (!match) return '';
-			const country = match[1].trim().toUpperCase();
-			if (country.startsWith('ESTADOS UNIDOS')) return 'ESTADOS UNIDOS';
-			if (country.startsWith('REINO UNIDO')) return 'REINO UNIDO';
-			if (country.startsWith('RUSIA')) return 'RUSIA';
-			return country;
-		}
-
-		function populateCountryFilter(hotspots) {
-			const countries = new Set();
-			hotspots.forEach(h => {
-				const c = extractCountry(h.name);
-				if (c) countries.add(c);
-			});
-
-			const sorted = Array.from(countries).sort((a, b) => a.localeCompare(b, 'es'));
-			sorted.forEach(c => {
-				const opt = document.createElement('option');
-				opt.value = c;
-				opt.textContent = c;
-				countryFilter.appendChild(opt);
-			});
-		}
-
-		function applyFilters() {
-			const countryVal = countryFilter.value.trim().toUpperCase();
-			const searchVal = searchInput.value.trim().toLowerCase();
-
-			markerGroup.clearLayers();
-			markers = [];
-
-			let filtered = hotspots.filter(h => {
-				const country = extractCountry(h.name);
-				if (countryVal && country !== countryVal) return false;
-
-				if (searchVal) {
-					const text = (h.name + ' ' + h.description).toLowerCase();
-					if (!text.includes(searchVal)) return false;
-				}
-				return true;
-			});
-
-			filtered.forEach(h => {
-				const marker = L.marker([h.lat, h.lng]);
-				marker.bindPopup(createPopupContent(h));
-				marker.on('click', () => renderDetails(h));
-				markerGroup.addLayer(marker);
-				markers.push(marker);
-			});
-
-			totalCountEl.textContent = `${filtered.length} lugares`;
-
-			if (filtered.length > 0) {
-				const first = filtered[0];
-				map.setView([first.lat, first.lng], 5);
-				renderDetails(first);
-			} else {
-				locationDetails.innerHTML = `
-					<div class="location-title">Sin resultados</div>
-					<div class="location-description">Prueba a cambiar el país o el texto de búsqueda.</div>
-				`;
-			}
-		}
-
-		fetch('hotspots.json')
-			.then(response => response.json())
-			.then(data => {
-				hotspots = data;
-				populateCountryFilter(hotspots);
-				applyFilters();
-			})
-			.catch(err => {
-				console.error('Error cargando hotspots.json:', err);
-				locationDetails.innerHTML = `
-					<div class="location-title">Error</div>
-					<div class="location-description">
-						No se pudieron cargar las localizaciones. Asegúrate de que el archivo hotspots.json está accesible.
-					</div>
-				`;
-			});
-
-		countryFilter.addEventListener('change', applyFilters);
-		searchInput.addEventListener('input', () => {
-			clearTimeout(searchInput._t);
-			searchInput._t = setTimeout(applyFilters, 250);
-		});
-	</script>
-
-	<!-- Script overlay: contar hotspots y mostrar mensaje solo la primera vez -->
-	<script>
-		(async () => {
-			try {
-				// solo primera vez
-				if (localStorage.getItem("seenIntroLocations") === "1") return;
-
-				const overlay = document.getElementById("startup-overlay");
-				if (!overlay) return;
-				const overlayText = overlay.querySelector("span");
-
-				const res = await fetch("hotspots.json", { cache: "no-store" });
-				if (!res.ok) throw new Error("No se pudo cargar hotspots.json en overlay");
-				const data = await res.json();
-
-				let count = 0;
-				if (Array.isArray(data)) {
-					count = data.length;
-				} else if (data && typeof data === "object") {
-					count = Object.keys(data).length;
-				}
-
-				overlayText.textContent =
-					count > 0
-						? `Actualmente hay ${count} localizaciones malditas en el mapa.`
-						: "Cargando localizaciones malditas en el mapa...";
-
-				requestAnimationFrame(() => {
-					overlay.classList.add("visible");
-				});
-
-				setTimeout(() => {
-					overlay.classList.remove("visible");
-					setTimeout(() => overlay.remove(), 700);
-				}, 1500);
-
-				localStorage.setItem("seenIntroLocations", "1");
-			} catch (err) {
-				console.error("Error overlay inicio:", err);
-				const overlay = document.getElementById("startup-overlay");
-				if (overlay) overlay.remove();
-			}
-		})();
-	</script>
-</body>
-</html>
-      max-width: 480px;
-      line-height: 1.5;
+  <meta charset="UTF-8" />
+  <!--- Umami --->
+  <script defer src="https://cloud.umami.is/script.js" data-website-id="312c21b6-85da-4fae-8cb5-c92911b44de7"></script>
+
+  <title>Mapa Paranormal Agustín Bola Mortimer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  
+  <!-- Meta OG -->
+<meta property="og:title" content="Mapa de Investigación Paranormal" />
+<meta property="og:description" content="Explora los puntos más paranormales detectados en mis investigaciones. Agustín Bola Mortimer." />
+<meta property="og:image" content="https://mapaparanormal.netlify.app/terrifie.jpg" />
+<meta property="og:url" content="https://mapaparanormal.netlify.app" />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="es_ES" />
+<meta name="twitter:card" content="summary_large_image" />
+  <meta property="og:see_also" content="https://www.tiktok.com/@agustinbolamortimer666" />
+
+  <!--- Leaflet CSS --->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css"
+  />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css"
+  />
+
+  <style>
+    :root {
+      --color-fondo: #050506;
+      --color-texto: #f5f5f5;
+      --color-rojo: #b10018;
+      --color-youtube: #ff0000;
+      --color-panel: rgba(5, 5, 6, 0.95);
+      --color-borde: rgba(255, 255, 255, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: var(--color-fondo);
+      color: var(--color-texto);
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+
+    #map {
+      width: 100%;
+      height: 100vh;
+      z-index: 1;
+    }
+
+    /* Header */
+    .header {
+      position: fixed;
+      top: 10px;
+      left: 54px;
+      display: flex;
+      align-items: center;
+      z-index: 1000;
+      background: var(--color-panel);
+      backdrop-filter: blur(8px);
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--color-borde);
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .header-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 1px solid var(--color-rojo);
+      flex-shrink: 0;
+    }
+
+    .header-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .header-title {
+      margin-left: 12px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: var(--color-rojo);
+    }
+
+    /* Popups */
+    .leaflet-popup-content-wrapper {
+      background: rgba(0, 0, 0, 0.95);
+      color: var(--color-texto);
+      border: 1px solid var(--color-borde);
+      padding: 0;
+      overflow: hidden;
+      border-radius: 8px;
+    }
+
+    .leaflet-popup-content {
+      margin: 0;
+      width: 240px !important;
+    }
+
+    .popup-img {
+      width: 100%;
+      height: 130px;
+      object-fit: cover;
+      border-bottom: 2px solid var(--color-rojo);
+      display: block;
+    }
+
+    .popup-body {
+      padding: 12px;
+    }
+
+    .popup-title {
+      font-weight: bold;
+      color: var(--color-rojo);
+      text-transform: uppercase;
+      display: block;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .tag-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin: 8px 0;
+    }
+
+    .tag {
+      font-size: 9px;
+      padding: 3px 7px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-weight: bold;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .tag-psicofonia {
+      background: #1a4d8a;
+      color: #fff;
+    }
+
+    .tag-aparicion {
+      background: #b10018;
+      color: #fff;
+    }
+
+    .tag-poltergeist {
+      background: #8a6d1a;
+      color: #fff;
+    }
+
+    .btn-popup {
+      display: block;
+      text-align: center;
+      padding: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 11px;
+      border-radius: 4px;
+      margin-top: 8px;
+    }
+
+    .btn-maps {
+      background: #333;
+      color: white;
+    }
+
+    .btn-youtube {
+      background: var(--color-youtube);
+      color: white;
+    }
+
+    /* Buscador */
+    .leaflet-control-search {
+      background: var(--color-panel);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .search-wrapper {
+      display: flex;
+      align-items: center;
+      padding: 2px;
+    }
+
+    #search-input {
+      width: 0;
+      height: 30px;
+      border: none;
+      background: transparent;
+      color: white;
+      padding: 0;
+      transition: width 0.3s;
+      outline: none;
+    }
+
+    .leaflet-control-search:hover #search-input {
+      width: 180px;
+      padding: 0 10px;
+    }
+
+    .search-icon-btn {
+      width: 30px;
+      height: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--color-rojo);
+    }
+
+    #search-results {
+      background: var(--color-panel);
+      max-height: 200px;
+      overflow-y: auto;
+      width: 210px;
+      display: none;
+      border-top: 1px solid var(--color-borde);
+    }
+
+    .search-item {
+      padding: 8px 12px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--color-borde);
+      font-size: 0.85rem;
+    }
+
+    /* Footer contacto */
+    .contact-footer {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      background: var(--color-panel);
+      padding: 10px 16px;
+      border-radius: 30px;
+      border: 1px solid var(--color-borde);
+      text-decoration: none;
+      color: var(--color-texto);
+      backdrop-filter: blur(8px);
+    }
+
+    .footer-icon {
+      width: 16px;
+      fill: white;
+      margin: 0 8px;
+      vertical-align: middle;
+    }
+
+    .contact-label {
+      font-size: 11px;
+      margin-left: 5px;
+    }
+
+    /* Capas UI */
+    .leaflet-control-layers {
+      background: var(--color-panel) !important;
+      color: white !important;
+      border: 1px solid var(--color-borde) !important;
+    }
+
+    @media (max-width: 600px) {
+      .contact-label {
+        display: none;
+      }
+      .header {
+        left: 50px;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- CONTENIDO ORIGINAL DE TU APP -->
-  <div id="app">
-    <!-- Aquí va todo tu HTML actual: contenedores, mapa, panel lateral, etc. -->
+  <a href="https://www.youtube.com/@AgustinBolaMortimer" target="_blank" class="header">
+    <div class="header-logo">
+      <img src="terrifie.jpg" alt="Logo" />
+    </div>
+    <div class="header-title" id="header-title-text">Mapa Paranormal</div>
+  </a>
+
+  <div id="map"></div>
+
+  <div class="contact-footer">
+    <a href="mailto:agustinbolamortimer33@gmail.com" style="color:var(--color-rojo); text-decoration:none; font-weight:bold;">Contacto</a>
+    <a href="https://www.tiktok.com/@agustinbolamortimer666" target="_blank">
+      <svg class="footer-icon" viewBox="0 0 448 512">
+        <path
+          d="M448 209.91a210.06 210.06 0 0 1-122.77-39.25V349.38A162.55 162.55 0 1 1 185 188.31V278.2a74.62 74.62 0 1 0 52.23 71.18V0l88 0a121.18 121.18 0 0 0 1.86 22.32c7.87 3.34 15.33 7.45 22.43 12.17a126.66 126.66 0 0 0 77.32 26.06V130c-14.27-.11-28.38-2.58-41.69-7.23a127.84 127.84 0 0 0-37.16-21.36V209.91z"
+        />
+      </svg>
+    </a>
+    <span class="contact-label" id="contact-label-text">Agustín Bola Mrtimer</span>
   </div>
 
-  <!-- Overlay de inicio -->
-  <div id="startup-overlay" aria-hidden="true">
-    <span></span>
-  </div>
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
 
-  <!-- Scripts de tu app (los que ya tuvieras) -->
-  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
-    integrity="sha256-nPLb7G8G92Lh0bXnH3UX0rDhmG8I5pIeSue2FY0zMQ8="
-    crossorigin=""></script>
-  <script src="main.js"></script>
-
-  <!-- Script: contar hotspots y mostrar overlay solo la primera vez -->
   <script>
-    (async () => {
-      // Solo mostrar la primera vez en este navegador
-      if (localStorage.getItem("seenIntroLocations") === "1") return;
+    // === Internacionalización básica UI ===
+    const userLang = (navigator.language || navigator.userLanguage || "es").split("-")[0]; // 'es','en','vi',...
+    const supportedLangs = ["es", "en", "vi"];
+    const lang = supportedLangs.includes(userLang) ? userLang : "es";
 
-      const overlay = document.getElementById("startup-overlay");
-      const overlayText = overlay.querySelector("span");
+    const t = {
+      es: {
+        title: "Mapa Paranormal",
+        contactLabel: "Agustín Bola Mortimer",
+        searchPlaceholder: "Buscar...",
+        btnWatch: "Ver investigación",
+        btnDirections: "Cómo llegar",
+      },
+      en: {
+        title: "Paranormal Map",
+        contactLabel: "Agustín Bola Mortimer",
+        searchPlaceholder: "Search...",
+        btnWatch: "Watch investigation",
+        btnDirections: "Get directions",
+      },
+      vi: {
+        title: "Bản đồ Siêu nhiên",
+        contactLabel: "Agustín Bola Mortimer",
+        searchPlaceholder: "Tìm kiếm...",
+        btnWatch: "Xem điều tra",
+        btnDirections: "Chỉ đường",
+      },
+    };
 
-      try {
-        const res = await fetch("hotspots.json", { cache: "no-store" });
-        if (!res.ok) throw new Error("No se pudo cargar hotspots.json");
-        const data = await res.json();
+    function applyStaticTranslations() {
+      const dict = t[lang] || t["es"];
+      const titleEl = document.getElementById("header-title-text");
+      if (titleEl) titleEl.textContent = dict.title;
 
-        let count = 0;
-        if (Array.isArray(data)) {
-          count = data.length;
-        } else if (data && typeof data === "object") {
-          count = Object.keys(data).length;
+      const contactLabelEl = document.getElementById("contact-label-text");
+      if (contactLabelEl) contactLabelEl.textContent = dict.contactLabel;
+
+      const searchInputEl = document.getElementById("search-input");
+      if (searchInputEl) searchInputEl.placeholder = dict.searchPlaceholder;
+    }
+
+    // === Mapa ===
+    // const map = L.map("map", { zoomControl: true }).setView([37.3, -5.9], 10);
+    // Añadimos minZoom para que no se vea el mundo pequeño y repetido
+    const map = L.map("map", {
+        minZoom: 3,  // No permite alejarse más allá de ver los continentes
+        maxZoom: 18  // Evita que el usuario entre en zonas donde el mapa se ve gris
+    }).setView([37.3886, -5.9823], 13);
+    
+      // Intentar localizar al usuario
+    map.locate({ setView: true, maxZoom: 10 });
+    
+    // Si se encuentra la ubicación, opcionalmente se puede poner un círculo o marcador
+    map.on('locationfound', function(e) {
+        // Crea un pequeño círculo azul en la posición del usuario
+        L.circle(e.latlng, {
+            radius: e.accuracy / 2,
+            color: '#3388ff',
+            fillColor: '#3388ff',
+            fillOpacity: 0.3
+        }).addTo(map);
+    });
+    
+    // Si el usuario rechaza el permiso o hay error, se queda en la vista por defecto (Sevilla)
+    map.on('locationerror', function(e) {
+        console.log("Acceso a ubicación denegado o no disponible.");
+    });
+    // Capas base
+    const osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+    });
+
+    const satelite = L.layerGroup([
+      L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        { maxZoom: 19,
+        noWrap: true // ESTO evita que el mapa se repita infinitamente a los lados
         }
+      ),
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+      }),
+    ]);
 
-        overlayText.textContent =
-          count > 0
-            ? `Actualmente hay ${count} localizaciones malditas en el mapa.`
-            : "Cargando localizaciones malditas en el mapa...";
+    const topo = L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
+      maxZoom: 17,
+    });
 
-        // Mostrar
-        requestAnimationFrame(() => {
-          overlay.classList.add("visible");
+    osm.addTo(map);
+
+    const baseLayers = {
+      "Mapa Normal": osm,
+      "Satélite": satelite,
+      "Relieve": topo,
+    };
+
+    L.control.layers(baseLayers, null, { position: "topright" }).addTo(map);
+
+    // Icono custom
+    const paranormalIcon = L.divIcon({
+      className: "custom-div-icon",
+      html:
+        '<div style="background-color:' +
+        "var(--color-rojo)" +
+        '; width:15px; height:15px; border-radius:50%; border:2px solid white; box-shadow:0 0 12px var(--color-rojo);"></div>',
+      iconSize: [15, 15],
+      iconAnchor: [7, 7],
+      popupAnchor: [0, -10],
+    });
+
+    let allData = [];
+
+    function cleanText(text) {
+      return text
+        ? text
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+        : "";
+    }
+
+    function generarTags(descripcion) {
+      if (!descripcion) return "";
+      const text = cleanText(descripcion);
+      let tagsHTML = '<div class="tag-container">';
+      let found = false;
+
+      const reglas = [
+        {
+          terminos: ["psicofonia", "audio", "voces"],
+          clase: "tag-psicofonia",
+          label: "Psicofonías",
+        },
+        {
+          terminos: ["aparicion", "sombra", "espectro", "figura"],
+          clase: "tag-aparicion",
+          label: "Apariciones",
+        },
+        {
+          terminos: ["poltergeist", "movimiento", "golpes"],
+          clase: "tag-poltergeist",
+          label: "Poltergeist",
+        },
+      ];
+
+      reglas.forEach((r) => {
+        if (r.terminos.some((t) => text.includes(t))) {
+          tagsHTML += '<span class="tag ' + r.clase + '">' + r.label + "</span>";
+          found = true;
+        }
+      });
+
+      tagsHTML += "</div>";
+      return found ? tagsHTML : "";
+    }
+
+    function crearPopup(h) {
+      const dict = t[lang] || t["es"];
+      let thumbnail = "";
+      if (h.video && h.video.trim() !== "") {
+        try {
+          let videoId = "";
+          if (h.video.includes("v=")) {
+            videoId = h.video.split("v=")[1].split("&")[0];
+          } else if (h.video.includes("youtu.be/")) {
+            videoId = h.video.split("youtu.be/")[1].split("?")[0];
+          }
+          thumbnail =
+            '<img src="https://img.youtube.com/vi/' +
+            videoId +
+            '/mqdefault.jpg" class="popup-img" onerror="this.style.display=\'none\'" />';
+        } catch (e) {
+          thumbnail = "";
+        }
+      }
+
+      const tags = generarTags(h.description);
+      const gMapsUrl =
+        "https://www.google.com/maps/search/?api=1&query=" + h.lat + "," + h.lng;
+
+      const btnYT =
+        h.video && h.video.trim() !== ""
+          ? '<a href="' +
+            h.video +
+            '" target="_blank" class="btn-popup btn-youtube">' +
+            dict.btnWatch +
+            "</a>"
+          : "";
+
+      const btnMaps =
+        '<a href="' +
+        gMapsUrl +
+        '" target="_blank" class="btn-popup btn-maps">' +
+        dict.btnDirections +
+        "</a>";
+
+      return (
+        thumbnail +
+        '<div class="popup-body">' +
+        '<span class="popup-title">' +
+        h.name +
+        "</span>" +
+        tags +
+        '<p style="font-size:11px; color:#ccc; margin:8px 0; line-height:1.4;">' +
+        (h.description || "") +
+        "</p>" +
+        btnMaps +
+        btnYT +
+        "</div>"
+      );
+    }
+
+    // Control de búsqueda
+    const SearchControl = L.Control.extend({
+      options: { position: "topleft" },
+      onAdd: function () {
+        const container = L.DomUtil.create(
+          "div",
+          "leaflet-control-search leaflet-bar"
+        );
+        container.innerHTML =
+          '<div class="search-wrapper">' +
+          '<div class="search-icon-btn">🔍</div>' +
+          '<input type="text" id="search-input" placeholder="" />' +
+          "</div>" +
+          '<div id="search-results"></div>';
+        return container;
+      },
+    });
+
+    map.addControl(new SearchControl());
+
+    // Cargar datos
+    fetch("hotspots.json")
+      .then((r) => r.json())
+      .then((data) => {
+        allData = data;
+        const markers = L.markerClusterGroup();
+        data.forEach((h) => {
+          if (h.lat && h.lng) {
+            const m = L.marker([h.lat, h.lng], { icon: paranormalIcon }).bindPopup(
+              crearPopup(h)
+            );
+            m.bindTooltip(h.name, {
+              direction: "top",
+              offset: [0, -5],
+            });
+            markers.addLayer(m);
+          }
+        });
+        map.addLayer(markers);
+
+        // Eventos búsqueda
+        document.addEventListener("input", (e) => {
+          if (e.target.id !== "search-input") return;
+          const val = cleanText(e.target.value);
+          const resDiv = document.getElementById("search-results");
+          resDiv.innerHTML = "";
+          if (val.length < 2) {
+            resDiv.style.display = "none";
+            return;
+          }
+          allData
+            .filter((h) => cleanText(h.name).includes(val))
+            .forEach((h) => {
+              const item = document.createElement("div");
+              item.className = "search-item";
+              item.innerHTML = h.name;
+              item.onclick = () => {
+                map.flyTo([h.lat, h.lng], 16);
+                resDiv.style.display = "none";
+              };
+              resDiv.appendChild(item);
+            });
+          resDiv.style.display = "block";
         });
 
-        // Mantener visible ~1.5s y luego desvanecer
-        setTimeout(() => {
-          overlay.classList.remove("visible");
-          // Eliminar del DOM tras el fade-out
-          setTimeout(() => {
-            overlay.remove();
-          }, 700);
-        }, 1500);
-
-        // Marcar como visto
-        localStorage.setItem("seenIntroLocations", "1");
-      } catch (err) {
-        // Si falla la carga, quitar overlay sin molestar al usuario
-        console.error("Error al mostrar overlay de inicio:", err);
-        overlay.remove();
+        // Aplica traducciones de UI después de tener el input creado
+        applyStaticTranslations();
+      })
+      .catch((err) => console.error(err));
+    // Generador de Datos Estructurados (JSON-LD) para SEO
+function generarSchema(data) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "itemListElement": data.slice(0, 10).map((h, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "item": {
+        "@type": "Place",
+        "name": h.name,
+        "description": h.description,
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": h.lat,
+          "longitude": h.lng
+        },
+        "url": window.location.href
       }
-    })();
+    }))
+  };
+
+  const script = document.createElement('script');
+  script.type = "application/ld+json";
+  script.text = JSON.stringify(schema);
+  document.head.appendChild(script);
+}
+
+// Llamamos a la función dentro del fetch que ya tienes
+// Busca donde termina tu fetch('hotspots.json') y añade:
+// .then(data => { ... generarSchema(data); });
   </script>
 </body>
 </html>
