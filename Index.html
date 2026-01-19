@@ -444,6 +444,16 @@
       zoomControl: true,
     }).setView([37.3886, -5.9823], 3);
 
+    const BASE_URL = "https://mapaparanormal.netlify.app";
+
+    function generarUrlDesdeVista() {
+      const center = map.getCenter();
+      const zoom = map.getZoom();
+      const lat = center.lat.toFixed(6);
+      const lng = center.lng.toFixed(6);
+      return `${BASE_URL}/?lat=${lat}&lng=${lng}&zoom=${zoom}`;
+    }
+
     // Leer parámetros lat/lng/zoom de la URL para centrar el mapa
     function getParams() {
       const p = new URLSearchParams(window.location.search);
@@ -581,10 +591,6 @@
       return found ? tagsHTML : "";
     }
 
-    // --------- NUEVO: compartir al portapapeles ---------
-    const BASE_URL = "https://mapaparanormal.netlify.app";
-    const ZOOM_COMPARTIR = 18;
-
     function copiarAlPortapapeles(texto) {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(texto)
@@ -604,9 +610,8 @@
         document.body.removeChild(input);
       }
     }
-    // ----------------------------------------------------
 
-    // Popup con nuevo botón Compartir
+    // Popup con botón Compartir que usa la vista actual
     function crearPopup(h) {
       const dict = t[lang] || t.es;
       let thumbnail = "";
@@ -647,11 +652,9 @@
         </a>
       `;
 
-      // NUEVO: botón que copia enlace al portapapeles con zoom cercano
-      const shareUrl = `${BASE_URL}/?lat=${h.lat}&lng=${h.lng}&zoom=${ZOOM_COMPARTIR}`;
       const btnShare = `
         <a href="javascript:void(0)" 
-           onclick="copiarAlPortapapeles('${shareUrl}')"
+           onclick="copiarAlPortapapeles(generarUrlDesdeVista())"
            class="btn-popup btn-maps">
           ${dict.btnShare}
         </a>
