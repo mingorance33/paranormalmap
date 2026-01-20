@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -15,10 +14,10 @@
   <!-- Meta OG para chino -->
   <title id="dynamic-title">世界闹鬼地点地图 | MapaParanormal</title>
   <meta name="description"
-        content="在交互式地图中探索世界各地的闹鬼地点和超自然热点。鬼屋、灵异调查、黑暗旅游，一张地图全掌握。" />
+        content="在交互式地图中探索世界各地的闹鬼地点和超自然热点。鬼屋、灵异调查和暗黑旅游尽在一张地图中。" />
   <meta property="og:title" content="超自然调查地图" />
   <meta property="og:description"
-        content="探索我调查中记录的最诡异、最闹鬼地点。Agustín Bola Mortimer。" />
+        content="探索我调查中记录的最闹鬼地点。Agustín Bola Mortimer。" />
   <meta property="og:image" content="https://mapaparanormal.netlify.app/terrifie.jpg" />
   <meta property="og:url" content="https://mapaparanormal.netlify.app/zh" />
   <meta property="og:type" content="website" />
@@ -339,7 +338,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
 
-  <!-- Textos fijos solo en chino -->
+  <!-- Textos fijos en chino -->
   <script>
     const t = {
       title: '世界闹鬼地点地图 | MapaParanormal',
@@ -376,6 +375,7 @@
 
     const BASEURL = 'https://mapaparanormal.netlify.app/zh';
 
+    // Capas base
     const osm = L.tileLayer('https://s.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19
     });
@@ -394,6 +394,7 @@
       maxZoom: 17
     });
 
+    // Capa por defecto
     osm.addTo(map);
 
     const baseLayers = {
@@ -404,6 +405,7 @@
 
     L.control.layers(baseLayers, null, { position: 'topright' }).addTo(map);
 
+    // Parámetros URL
     function getParams() {
       const p = new URLSearchParams(window.location.search);
       const lat = parseFloat(p.get('lat'));
@@ -542,14 +544,14 @@
 
       const btnYT =
         h.video && h.video.trim() !== ''
-          ? `<a href="${h.video}" target="_blank" class="btn-popup btn-youtube">观看调查</a>`
+          ? `<a href="${h.video}" target="_blank" class="btn-popup btn-youtube">${t.btnWatch}</a>`
           : '';
 
       const btnMaps =
-        `<a href="${gMapsUrl}" target="_blank" class="btn-popup btn-maps">获取路线</a>`;
+        `<a href="${gMapsUrl}" target="_blank" class="btn-popup btn-maps">${t.btnDirections}</a>`;
 
       const btnShare =
-        `<a href="javascript:void(0)" onclick="copiarAlPortapapeles(generarUrlDesdeVista())" class="btn-popup btn-maps">分享位置</a>`;
+        `<a href="javascript:void(0)" onclick="copiarAlPortapapeles(generarUrlDesdeVista())" class="btn-popup btn-maps">${t.btnShare}</a>`;
 
       return (
         `${thumbnail}` +
