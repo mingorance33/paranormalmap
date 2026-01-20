@@ -376,23 +376,24 @@
     const BASEURL = 'https://mapaparanormal.netlify.app/zh';
 
     // Capas base
-    const osm = L.tileLayer('https://s.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19
-    });
+ 
+const osm = L.tileLayer('https://s.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19
+});
 
-    const satelite = L.layerGroup([
-      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        maxZoom: 19,
-        noWrap: true
-      }),
-      L.tileLayer('https://s.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png', {
-        maxZoom: 19
-      })
-    ]);
+const satelite = L.layerGroup([
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 19,
+    noWrap: true
+  }),
+  L.tileLayer('https://s.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png', {
+    maxZoom: 19
+  })
+]);
 
-    const topo = L.tileLayer('https://s.tile.opentopomap.org/{z}/{x}/{y}.png', {
-      maxZoom: 17
-    });
+const topo = L.tileLayer('https://s.tile.opentopomap.org/{z}/{x}/{y}.png', {
+  maxZoom: 17
+});
 
     // Capa por defecto
     osm.addTo(map);
