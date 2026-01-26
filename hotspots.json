@@ -22340,6 +22340,15 @@
   "lng": 4.6309,
   "description": "Antiguas arenas romanas construidas bajo el emperador Domitiano en Arles, con capacidad para 25.000 espectadores. Las scalae orcinae (trampas) permitían que los espectros aparecieran mágicamente durante los espectáculos. Hoy en día, los visitantes nocturnos reportan ecos de combates de gladiadores, gritos agonizantes que emergen de las piedras ancestrales, y sombras de luchadores que aún vagan por la arena.",
   "video": "https://voyages-en-france.fr/index.php/2022/04/17/les-arenes-d-arles-amphitheatre-sous-domitien/"
-}
+},
+Perfecto, basándome en la información de la Casa del Aire en Arahal, aquí está el JSON completo siguiendo tu estructura:
+
+{
+  "name": "Casa del Aire - Arahal",
+  "lat": 37.262938,
+  "lng": -5.544300,
+  "description": "La Casa del Aire, ubicada en la calle Veracruz de Arahal, Sevilla, es considerada una de las últimas casas encantadas de la provincia sevillana. Este edificio barroco del siglo XVIII alberga una inquietante leyenda paranormal que se remonta siglos atrás. Según relatos de vecinos e investigadores, en su interior murió trágicamente una niña en el siglo XVIII, cuyo espíritu aún deambula por los pasillos del edificio en Arahal. Los testigos han reportado puertas que se abren y cierran sin explicación, luces que se encienden solas, ruidos inexplicables en habitaciones vacías y la presencia de una aparición espectral reflejada en los espejos de la Casa del Aire de Arahal. En 2024 se realizó una investigación paranormal donde se detectaron espíritus mediante psicofonías, con testimonios de vecinos que afirman haber sentido presencias frías y visto sombras que se desplazan por este emblemático auditorio cultural de Arahal, en plena comarca de la Campiña sevillana.",
+  "video": "https://www.youtube.com/watch?v=CkhWoz-9BmA"
+},
 
   ]
